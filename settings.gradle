@@ -1,0 +1,3 @@
+include ':app', ':util', ':io', ':module'
+project(":util").projectDir = new File("../Util/module")
+project(":io").projectDir = new File("../IO/module")
