@@ -1,3 +1,2 @@
-include ':app', ':util', ':io', ':module'
-project(":util").projectDir = new File("../Util/module")
-project(":io").projectDir = new File("../IO/module")
+include ':app', ':module', ':vinkas'
+project(":vinkas").projectDir = new File("../Library/module")

@@ -4,9 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Reminders.iml" filepath="$PROJECT_DIR$/Reminders.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../IO/module/io.iml" filepath="$PROJECT_DIR$/../IO/module/io.iml" />
       <module fileurl="file://$PROJECT_DIR$/module/module.iml" filepath="$PROJECT_DIR$/module/module.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../Util/module/util.iml" filepath="$PROJECT_DIR$/../Util/module/util.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../Library/module/vinkas.iml" filepath="$PROJECT_DIR$/../Library/module/vinkas.iml" />
     </modules>
   </component>
 </project>
