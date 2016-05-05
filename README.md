@@ -1,6 +1,5 @@
-# Reminders-Android
+# Reminders
 Android App to remind to-do tasks using Firebase
 
 ## Requirements
-* [IO Android](https://github.com/vinkas-technologies/IO-Android)
-* [Util Android](https://github.com/vinkas-technologies/Util-Android)
+* [Android Library](https://github.com/vinkas-technologies/android-library)
