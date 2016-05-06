@@ -7,6 +7,6 @@ public class SplashActivity extends vinkas.app.SplashActivity {
 
     @Override
     protected Class<?> getMainActivityClass() {
-        return TestActivity.class;
+        return MainActivity.class;
     }
 }

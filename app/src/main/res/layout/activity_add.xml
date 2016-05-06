@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/x"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:elevation="10dp"
+        android:paddingBottom="56dp"
+        android:paddingLeft="32dp"
+        android:paddingRight="16dp"
+        android:paddingTop="16dp"
+        android:background="@color/primary"
+        android:theme="@style/ThemeOverlay.Vinkas.Dark.ActionBar">
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp" android:theme="@style/TextAppearance.Vinkas.Dark">
+
+            <EditText
+                android:id="@+id/ltitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:textColor="@android:color/white"
+                android:hint="Title" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp" android:theme="@style/TextAppearance.Vinkas.Dark">
+
+            <EditText
+                android:id="@+id/lDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:textColor="@android:color/white"
+                android:hint="Title" />
+        </android.support.design.widget.TextInputLayout>
+
+    </LinearLayout>
+</RelativeLayout>
