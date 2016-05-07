@@ -1,7 +1,6 @@
 package com.vinkas.reminders;
 
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 
 import vinkas.app.Activity;
 

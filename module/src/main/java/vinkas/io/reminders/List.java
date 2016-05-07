@@ -2,15 +2,29 @@ package vinkas.io.reminders;
 
 import android.util.Log;
 
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 /**
  * Created by Vinoth on 6-5-16.
  */
-public class List extends vinkas.io.List {
+public abstract class List extends vinkas.io.List {
 
-    public List(Database database, String accountId) {
-        super(database, childPath(accountId));
+    private String type;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public List(Database database, String type) {
+        super(database, database.getRemindersPath() + type);
         read();
     }
 
@@ -26,17 +40,14 @@ public class List extends vinkas.io.List {
 
     }
 
-    private static String childPath(String accountId) {
-        return "reminders/open/" + accountId;
-    }
-
     @Override
     public boolean isValid() {
         return false;
     }
 
     @Override
-    public void onRead(String key, java.lang.Object value) {
+    public void onRead(String key, Object value) {
         Log.d(key, key);
     }
+
 }

@@ -4,7 +4,6 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.text.InputType;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
@@ -12,19 +11,32 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TimePicker;
 
-import com.firebase.client.ChildEventListener;
-import com.firebase.client.DataSnapshot;
-import com.firebase.client.FirebaseError;
-
 import java.text.ParseException;
 
 import vinkas.app.NavigationDrawerActivity;
 import vinkas.io.reminders.ListItem;
+import vinkas.io.reminders.open.Database;
+import vinkas.io.reminders.open.List;
+import vinkas.util.Helper;
 
 /**
  * Created by Vinoth on 6-5-16.
  */
 public class MainActivity extends NavigationDrawerActivity {
+
+    public List getReminders() {
+        return getDatabase().getReminders();
+    }
+
+    @Override
+    public Application getApp() {
+        return (Application) super.getApp();
+    }
+
+    @Override
+    public Database getDatabase() {
+        return (Database) super.getDatabase();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,34 +104,6 @@ public class MainActivity extends NavigationDrawerActivity {
                     tpDialog.show();
             }
         });
-
-
-        ((Application) getApp()).getDatabase().getReminders().getFirebase().addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Log.d(dataSnapshot.getKey(), dataSnapshot.getValue().toString());
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-
-            }
-        });
     }
 
     @Override
@@ -141,11 +125,11 @@ public class MainActivity extends NavigationDrawerActivity {
 
     public void addReminder(View v) {
         try {
-            reminder = ((Application) getApp()).getDatabase().create(etTitle.getText().toString(), day, month, year, hour, min);
+            reminder = getReminders().create(etTitle.getText().toString(), day, month, year, hour, min);
             popHolder.setVisibility(View.GONE);
             getFab().setVisibility(View.VISIBLE);
         } catch (ParseException pe) {
-            pe.printStackTrace();
+            Helper.onException(pe);
         }
     }
 

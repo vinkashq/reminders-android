@@ -1,5 +1,7 @@
 package vinkas.io.reminders;
 
+import com.firebase.client.DataSnapshot;
+
 import java.util.Date;
 
 /**
@@ -7,13 +9,13 @@ import java.util.Date;
  */
 public class ListItem extends vinkas.io.ListItem {
 
-    public Date getDateTime() {
-        Long l = Long.getLong(get("DateTime"));
+    public Date getAt() {
+        Long l = Long.getLong(get("At"));
         return new Date(l);
     }
 
-    public void setDateTime(Date dateTime) {
-        set("DateTime", dateTime);
+    public void setAt(Date dateTime) {
+        set("At", dateTime);
     }
 
     public String getTitle() {
@@ -26,11 +28,18 @@ public class ListItem extends vinkas.io.ListItem {
 
     public ListItem(List reminders) {
         super(reminders);
-        getFirebase().setPriority(0 - System.currentTimeMillis());
+    }
+
+    public ListItem(List reminders, String key) {
+        super(reminders, key);
+    }
+
+    public ListItem(DataSnapshot dataSnapshot) {
+        super(dataSnapshot);
     }
 
     @Override
     public boolean isValid() {
-        return false;
+        return (getTitle() != null && getAt() != null);
     }
 }
