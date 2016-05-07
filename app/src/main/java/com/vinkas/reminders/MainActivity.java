@@ -11,13 +11,10 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TimePicker;
 
-import java.text.ParseException;
-
 import vinkas.app.NavigationDrawerActivity;
 import vinkas.io.reminders.ListItem;
 import vinkas.io.reminders.open.Database;
 import vinkas.io.reminders.open.List;
-import vinkas.util.Helper;
 
 /**
  * Created by Vinoth on 6-5-16.
@@ -124,13 +121,9 @@ public class MainActivity extends NavigationDrawerActivity {
     private int year, month, day, hour, min;
 
     public void addReminder(View v) {
-        try {
-            reminder = getReminders().create(etTitle.getText().toString(), day, month, year, hour, min);
-            popHolder.setVisibility(View.GONE);
-            getFab().setVisibility(View.VISIBLE);
-        } catch (ParseException pe) {
-            Helper.onException(pe);
-        }
+        reminder = getReminders().create(etTitle.getText().toString(), day, month, year, hour, min);
+        popHolder.setVisibility(View.GONE);
+        getFab().setVisibility(View.VISIBLE);
     }
 
     RelativeLayout popHolder;

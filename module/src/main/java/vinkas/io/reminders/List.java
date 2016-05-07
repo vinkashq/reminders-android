@@ -1,12 +1,12 @@
 package vinkas.io.reminders;
 
+import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 
-import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import vinkas.reminders.R;
 
 /**
  * Created by Vinoth on 6-5-16.
@@ -28,6 +28,10 @@ public abstract class List extends vinkas.io.List {
         read();
     }
 
+    public Uri getReceiverUri(Context context) {
+        return Uri.parse(context.getString(R.string.receiver_scheme) + "://" + context.getString(R.string.receiver_host));
+    }
+
     @Override
     protected void setFirebase(Firebase firebase) {
         super.setFirebase(firebase);
@@ -37,7 +41,6 @@ public abstract class List extends vinkas.io.List {
     @Override
     public Firebase getFirebase() {
         return super.getFirebase();
-
     }
 
     @Override

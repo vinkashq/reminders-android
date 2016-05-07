@@ -2,10 +2,6 @@ package vinkas.io.reminders;
 
 import android.content.Context;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-
-import vinkas.io.Account;
 import vinkas.reminders.R;
 
 /**
