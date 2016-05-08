@@ -1,4 +1,4 @@
-package com.vinkas.reminders;
+package com.vinkas.reminders.open;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -12,18 +12,12 @@ import android.widget.RelativeLayout;
 import android.widget.TimePicker;
 
 import vinkas.app.NavigationDrawerActivity;
-import vinkas.io.reminders.ListItem;
-import vinkas.io.reminders.open.Database;
-import vinkas.io.reminders.open.List;
+import io.vinkas.Reminder;
 
 /**
  * Created by Vinoth on 6-5-16.
  */
 public class MainActivity extends NavigationDrawerActivity {
-
-    public List getReminders() {
-        return getDatabase().getReminders();
-    }
 
     @Override
     public Application getApp() {
@@ -31,16 +25,11 @@ public class MainActivity extends NavigationDrawerActivity {
     }
 
     @Override
-    public Database getDatabase() {
-        return (Database) super.getDatabase();
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setLayout(R.layout.activity_main);
-        setMenu(R.menu.activity_main);
-        setNavigationMenu(R.menu.activity_main_drawer);
+        setLayout(com.vinkas.reminders.R.layout.activity_main);
+        setMenu(com.vinkas.reminders.R.menu.activity_main);
+        setNavigationMenu(com.vinkas.reminders.R.menu.activity_main_drawer);
     }
 
     @Override
@@ -53,7 +42,7 @@ public class MainActivity extends NavigationDrawerActivity {
         return super.onNavigationItemSelected(item);
     }
 
-    private ListItem reminder;
+    private Reminder reminder;
 
     DatePickerDialog dpDialog;
     TimePickerDialog tpDialog;
@@ -62,10 +51,10 @@ public class MainActivity extends NavigationDrawerActivity {
     @Override
     public void setContent(View content) {
         super.setContent(content);
-        popHolder = (RelativeLayout) getContent().findViewById(R.id.popHolder);
-        etTitle = (EditText) getContent().findViewById(R.id.etTitle);
-        etDate = (EditText) getContent().findViewById(R.id.etDate);
-        etTime = (EditText) getContent().findViewById(R.id.etTime);
+        popHolder = (RelativeLayout) getContent().findViewById(com.vinkas.reminders.R.id.popHolder);
+        etTitle = (EditText) getContent().findViewById(com.vinkas.reminders.R.id.etTitle);
+        etDate = (EditText) getContent().findViewById(com.vinkas.reminders.R.id.etDate);
+        etTime = (EditText) getContent().findViewById(com.vinkas.reminders.R.id.etTime);
         etDate.setInputType(InputType.TYPE_NULL);
         etTime.setInputType(InputType.TYPE_NULL);
         dpDialog = new DatePickerDialog(MainActivity.this, new DatePickerDialog.OnDateSetListener() {
@@ -106,7 +95,7 @@ public class MainActivity extends NavigationDrawerActivity {
     @Override
     public void onClick(View v) {
         super.onClick(v);
-        if (v.getId() == R.id.add) {
+        if (v.getId() == com.vinkas.reminders.R.id.add) {
             addReminder(v);
         }
     }
@@ -121,7 +110,7 @@ public class MainActivity extends NavigationDrawerActivity {
     private int year, month, day, hour, min;
 
     public void addReminder(View v) {
-        reminder = getReminders().create(etTitle.getText().toString(), day, month, year, hour, min);
+        reminder = getApp().getOpenReminders().getReminders().create(etTitle.getText().toString(), day, month, year, hour, min);
         popHolder.setVisibility(View.GONE);
         getFab().setVisibility(View.VISIBLE);
     }

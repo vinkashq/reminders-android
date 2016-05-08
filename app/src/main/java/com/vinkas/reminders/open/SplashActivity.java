@@ -1,4 +1,4 @@
-package com.vinkas.reminders;
+package com.vinkas.reminders.open;
 
 /**
  * Created by Vinoth on 4-5-16.

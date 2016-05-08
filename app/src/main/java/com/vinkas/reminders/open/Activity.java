@@ -1,14 +1,14 @@
-package com.vinkas.reminders;
+package com.vinkas.reminders.open;
 
-import vinkas.io.reminders.open.Database;
-import vinkas.io.reminders.open.List;
+import vinkas.model.reminders.open.Database;
+import vinkas.io.OpenReminders;
 
 /**
  * Created by Vinoth on 7-5-16.
  */
 public class Activity extends vinkas.app.Activity {
 
-    public List getReminders() {
+    public OpenReminders getReminders() {
         return getDatabase().getReminders();
     }
 
