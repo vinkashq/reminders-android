@@ -1,83 +1,40 @@
 package io.vinkas;
 
-import android.net.Uri;
-import android.util.Log;
-
-import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
-
-import java.util.Calendar;
-
-import vinkas.Application;
-import vinkas.io.List;
-import com.vinkas.reminders.R;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.core.Path;
+import com.firebase.client.core.Repo;
+import com.vinkas.util.Helper;
 
 /**
  * Created by Vinoth on 6-5-16.
  */
-public class Reminders extends List {
+public class Reminders extends List<Reminder> {
 
-    public Reminder create(String title, int day, int month, int year, int hour, int min) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(year, month, day, hour, min);
-        return create(title, calendar.getTimeInMillis());
+    public Reminders(Repo repo, Path path) {
+        super(repo, path);
     }
 
-    public Reminder create(String title, Long timeInMillis) {
-        Reminder i = new Reminder(getApplication(), this);
-        i.setTitle(title);
-        i.setTimeStamp(timeInMillis);
-        i.write();
-        return i;
+    public Reminders(String type) {
+        super(Helper.getUserUrl("reminders/" + type));
     }
 
-    @Override
-    public Reminder getItem(DataSnapshot dataSnapshot) {
-        return new Reminder(getApplication(), this, dataSnapshot);
+    public void create(String title, long timestamp, int status, int rtc_type, final CreateListener<Reminder> listener) {
+        final Reminder reminder = new Reminder();
+        reminder.setTitle(title);
+        reminder.setTimestamp(timestamp);
+        reminder.setStatus(status);
+        reminder.setRtc_type(rtc_type);
+        reminder.writeTo(this, new CompletionListener() {
+            @Override
+            public void onComplete(FirebaseError firebaseError, Firebase firebase) {
+                if (firebaseError == null) {
+                    reminder.schedule();
+                    listener.onCreate(reminder);
+                }
+                else
+                    listener.onError(firebaseError);
+            }
+        });
     }
-
-    private String type;
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public Reminders(Application application, String accountId, String type) {
-        super(application, getChildPath(application, accountId, type));
-        read();
-    }
-
-    public static String getChildPath(Application application, String accountId, String type) {
-        return application.getString(R.string.firebase_reminders_path).replace("ACCOUNT_ID", accountId) + type;
-    }
-
-    public Uri getReceiverUri() {
-        return Uri.parse(getApplication().getString(R.string.receiver_scheme) + "://" + getApplication().getString(R.string.receiver_host));
-    }
-
-    @Override
-    protected void setFirebase(Firebase firebase) {
-        super.setFirebase(firebase);
-        firebase.keepSynced(true);
-    }
-
-    @Override
-    public Firebase getFirebase() {
-        return super.getFirebase();
-    }
-
-    @Override
-    public boolean isValid() {
-        return false;
-    }
-
-    @Override
-    public void onRead(String key, java.lang.Object value) {
-        Log.d(key, key);
-    }
-
 }

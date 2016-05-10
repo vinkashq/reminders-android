@@ -1,5 +1,6 @@
-package com.vinkas.reminders.open;
+package com.vinkas.reminders;
 
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
@@ -11,7 +12,12 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TimePicker;
 
-import vinkas.app.NavigationDrawerActivity;
+import com.firebase.client.FirebaseError;
+import com.vinkas.util.Helper;
+
+import io.vinkas.CreateListener;
+
+import com.vinkas.activity.NavigationDrawerActivity;
 import io.vinkas.Reminder;
 
 /**
@@ -110,7 +116,18 @@ public class MainActivity extends NavigationDrawerActivity {
     private int year, month, day, hour, min;
 
     public void addReminder(View v) {
-        reminder = getApp().getOpenReminders().getReminders().create(etTitle.getText().toString(), day, month, year, hour, min);
+        Helper helper = Helper.getInstance();
+        long timestamp = helper.toTimeStamp(day, month, year, hour, min);
+        getApp().getReminders().create(etTitle.getText().toString(), timestamp, Reminder.STATUS_ACTIVE, AlarmManager.RTC_WAKEUP, new CreateListener<Reminder>() {
+            @Override
+            public void onCreate(Reminder item) {
+
+            }
+            @Override
+            public void onError(FirebaseError error) {
+
+            }
+        });
         popHolder.setVisibility(View.GONE);
         getFab().setVisibility(View.VISIBLE);
     }

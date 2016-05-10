@@ -1,8 +1,8 @@
-package com.vinkas.reminders.open;
+package com.vinkas.reminders;
 
 import android.os.Bundle;
 
-import vinkas.app.Activity;
+import com.vinkas.activity.Activity;
 
 public class AddActivity extends Activity {
 

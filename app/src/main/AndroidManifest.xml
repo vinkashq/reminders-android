@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.vinkas.reminders.open"
+    package="com.vinkas.reminders"
     android:sharedUserId="@string/vinkas_id"
     android:sharedUserLabel="@string/vinkas">
 
     <application
-        android:name=".Application"
+        android:name="com.vinkas.reminders.Application"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.Vinkas.Light.DarkActionBar">
         <activity
-            android:name=".SplashActivity"
+            android:name="com.vinkas.reminders.SplashActivity"
             android:theme="@style/Theme.Vinkas.Light.NoActionBar">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -21,9 +21,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name="com.vinkas.reminders.MainActivity"
             android:theme="@style/Theme.Vinkas.Light.NoActionBar" />
-        <activity android:name=".AddActivity" />
+        <activity android:name="com.vinkas.reminders.AddActivity" />
     </application>
 
 </manifest>
