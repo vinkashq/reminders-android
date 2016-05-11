@@ -16,8 +16,9 @@ public class Application extends com.vinkas.library.Application implements IRemi
     }
 
     @Override
-    public void setReminders(Reminders reminders) {
-        this.reminders = reminders;
+    public void setReminders(Reminders value) {
+        reminders = value;
+        reminders.keepSynced(true);
     }
 
     @Override

@@ -1,29 +1,39 @@
 package com.vinkas.reminders;
 
-import android.app.AlarmManager;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.widget.DrawerLayout;
 import android.text.InputType;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
 import android.widget.TimePicker;
+import android.widget.ViewSwitcher;
 
 import com.firebase.client.FirebaseError;
-import com.vinkas.util.Helper;
+import com.vinkas.reminders.fragment.CreateFragment;
 
 import io.vinkas.CreateListener;
 
 import com.vinkas.activity.NavigationDrawerActivity;
+
+import io.vinkas.Item;
 import io.vinkas.Reminder;
 
 /**
  * Created by Vinoth on 6-5-16.
  */
-public class MainActivity extends NavigationDrawerActivity {
+public class MainActivity extends NavigationDrawerActivity implements CreateFragment.OnFragmentInteractionListener {
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
 
     @Override
     public Application getApp() {
@@ -33,22 +43,19 @@ public class MainActivity extends NavigationDrawerActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setLayout(com.vinkas.reminders.R.layout.activity_main);
-        setMenu(com.vinkas.reminders.R.menu.activity_main);
-        setNavigationMenu(com.vinkas.reminders.R.menu.activity_main_drawer);
+        setLayout(R.layout.activity_main);
+        setMenu(R.menu.activity_main);
+        setNavigationMenu(R.menu.activity_main_drawer);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        return false;
+        if (toggle.onOptionsItemSelected(item) && getCurrentViewIndex() == 1) {
+            onBackPressed();
+            return false;
+        }
+        return super.onOptionsItemSelected(item);
     }
-
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        return super.onNavigationItemSelected(item);
-    }
-
-    private Reminder reminder;
 
     DatePickerDialog dpDialog;
     TimePickerDialog tpDialog;
@@ -57,10 +64,10 @@ public class MainActivity extends NavigationDrawerActivity {
     @Override
     public void setContent(View content) {
         super.setContent(content);
-        popHolder = (RelativeLayout) getContent().findViewById(com.vinkas.reminders.R.id.popHolder);
-        etTitle = (EditText) getContent().findViewById(com.vinkas.reminders.R.id.etTitle);
-        etDate = (EditText) getContent().findViewById(com.vinkas.reminders.R.id.etDate);
-        etTime = (EditText) getContent().findViewById(com.vinkas.reminders.R.id.etTime);
+        switcher = (ViewSwitcher) getContent().findViewById(R.id.switcher);
+        etTitle = (EditText) getContent().findViewById(R.id.etTitle);
+        etDate = (EditText) getContent().findViewById(R.id.etDate);
+        etTime = (EditText) getContent().findViewById(R.id.etTime);
         etDate.setInputType(InputType.TYPE_NULL);
         etTime.setInputType(InputType.TYPE_NULL);
         dpDialog = new DatePickerDialog(MainActivity.this, new DatePickerDialog.OnDateSetListener() {
@@ -106,39 +113,82 @@ public class MainActivity extends NavigationDrawerActivity {
         }
     }
 
-    public void newReminder() {
-        etTitle.setText("");
-        etDate.setText("");
-        etTime.setText("");
-        year = month = day = hour = min = 0;
-    }
-
     private int year, month, day, hour, min;
 
     public void addReminder(View v) {
-        Helper helper = Helper.getInstance();
-        long timestamp = helper.toTimeStamp(day, month, year, hour, min);
-        getApp().getReminders().create(etTitle.getText().toString(), timestamp, Reminder.STATUS_ACTIVE, AlarmManager.RTC_WAKEUP, new CreateListener<Reminder>() {
+        Reminder reminder = new Reminder();
+        reminder.setTitle(etTitle.getText().toString());
+        reminder.setTimeStamp(day, month, year, hour, min);
+        reminder.setStatus(Reminder.STATUS_ACTIVE);
+        getApp().getReminders().add(reminder, new CreateListener() {
             @Override
-            public void onCreate(Reminder item) {
-
+            public void onCreate(Item item) {
+                showListView();
             }
+
             @Override
             public void onError(FirebaseError error) {
 
             }
         });
-        popHolder.setVisibility(View.GONE);
-        getFab().setVisibility(View.VISIBLE);
     }
 
-    RelativeLayout popHolder;
+    private int currentViewIndex = -1;
+    ViewSwitcher switcher;
+
+    public void showItemView() {
+        if (getCurrentViewIndex() != 1) {
+            etTitle.setText("");
+            etDate.setText("");
+            etTime.setText("");
+            year = month = day = hour = min = 0;
+            getFab().setVisibility(View.GONE);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+            //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
+            getDrawer().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+            switcher.showNext();
+            setCurrentViewIndex(1);
+        }
+    }
+
+    public void showListView() {
+        if (getCurrentViewIndex() != 0) {
+            getFab().setVisibility(View.VISIBLE);
+            getSupportActionBar().setDisplayShowTitleEnabled(true);
+            //getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            getSupportActionBar().setHomeButtonEnabled(false);
+            getDrawer().setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            toggle.syncState();
+            switcher.showPrevious();
+            setCurrentViewIndex(0);
+        }
+    }
+
+    public int getCurrentViewIndex() {
+        if (currentViewIndex == -1)
+            currentViewIndex = switcher.indexOfChild(switcher.getCurrentView());
+        Log.d("Index", String.valueOf(currentViewIndex));
+        return currentViewIndex;
+    }
+
+    public void setCurrentViewIndex(int index) {
+        this.currentViewIndex = index;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (getCurrentViewIndex() == 0)
+            super.onBackPressed();
+        else {
+            showListView();
+            return;
+        }
+    }
 
     @Override
     public void onFabClick(View v) {
-        newReminder();
-        popHolder.setVisibility(View.VISIBLE);
-        v.setVisibility(View.GONE);
+        showItemView();
     }
 
 }

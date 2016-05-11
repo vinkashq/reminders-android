@@ -19,12 +19,11 @@ public class Reminders extends List<Reminder> {
         super(Helper.getUserUrl("reminders/" + type));
     }
 
-    public void create(String title, long timestamp, int status, int rtc_type, final CreateListener<Reminder> listener) {
+    public void create(String title, long timestamp, int status, final CreateListener<Reminder> listener) {
         final Reminder reminder = new Reminder();
         reminder.setTitle(title);
         reminder.setTimestamp(timestamp);
         reminder.setStatus(status);
-        reminder.setRtc_type(rtc_type);
         reminder.writeTo(this, new CompletionListener() {
             @Override
             public void onComplete(FirebaseError firebaseError, Firebase firebase) {
