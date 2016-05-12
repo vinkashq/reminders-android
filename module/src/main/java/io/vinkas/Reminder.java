@@ -5,6 +5,7 @@ import android.app.Notification;
 import android.os.Build;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.firebase.ui.RecyclerAdapter;
 import com.vinkas.notification.Scheduler;
 import com.vinkas.util.Helper;
 
@@ -26,6 +27,7 @@ public class Reminder extends ListItem<Reminders> {
     public void setTimeStamp(int day, int month, int year, int hour, int min) {
         Helper helper = Helper.getInstance();
         setTimestamp(helper.toTimeStamp(day, month, year, hour, min));
+
     }
 
     private String title;

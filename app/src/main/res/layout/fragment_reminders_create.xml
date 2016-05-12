@@ -4,46 +4,48 @@
     android:layout_height="match_parent"
     tools:context=".fragment.CreateFragment">
 
-    <com.vinkas.layout.FlowLayout
+    <com.vinkas.layout.FlowLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:vinkas="http://schemas.android.com/apk/res/com.vinkas.reminders"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:padding="@dimen/margin_large"
-        vinkas:horizontalSpacing="12dip"
-        vinkas:verticalSpacing="12dip"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_centerInParent="true">
+        android:layout_centerInParent="true"
+        android:padding="@dimen/margin_default"
+        vinkas:horizontalSpacing="12dip"
+        vinkas:verticalSpacing="0dip">
 
         <EditText
-            android:id="@+id/title"
+            android:id="@+id/etTitle"
+            style="@style/Widget.Vinkas.Button.Borderless.Post"
+            android:drawableLeft="@drawable/ic_create_black_24dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="Book "
-            android:textSize="30sp" />
+            android:hint="Book train ticket" />
+
+        <Button
+            android:id="@+id/btAt"
+            style="@style/Widget.Vinkas.Button.Borderless.Post"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:text="at" />
+
+        <Button
+            android:id="@+id/btDate"
+            style="@style/Widget.Vinkas.Button.Borderless.Post"
+            android:drawableLeft="@drawable/ic_today_black_24dp"
+            android:drawableStart="@drawable/ic_today_black_24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Tomorrow" />
 
         <TextView
-            android:id="@+id/at"
+            android:id="@+id/btTime"
+            style="@style/Widget.Vinkas.Button.Borderless.Post"
+            android:drawableLeft="@drawable/ic_access_time_black_24dp"
+            android:drawableStart="@drawable/ic_access_time_black_24dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:clickable="true"
-            android:text="at"
-            android:textSize="30sp" />
-
-        <TextView
-            android:id="@+id/date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:hint="Tomorrow"
-            android:textSize="30sp" />
-
-        <TextView
-            android:id="@+id/time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:hint="05.00 PM"
-            android:textSize="30sp" />
+            android:hint="05.00 PM" />
     </com.vinkas.layout.FlowLayout>
 
 </RelativeLayout>
