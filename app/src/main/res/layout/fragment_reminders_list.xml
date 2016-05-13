@@ -6,8 +6,8 @@
     android:name="com.vinkas.reminders.fragment.ListFragment"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginLeft="@dimen/margin_large"
-    android:background="@android:color/background_light"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
     app:layoutManager="LinearLayoutManager"
     tools:context="com.vinkas.reminders.fragment.ListFragment"
     tools:listitem="@layout/fragment_reminders_item" />

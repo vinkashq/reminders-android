@@ -1,6 +1,7 @@
 package com.vinkas.reminders;
 
 import io.vinkas.IReminders;
+import io.vinkas.Reminder;
 import io.vinkas.Reminders;
 
 /**
@@ -9,6 +10,12 @@ import io.vinkas.Reminders;
 public class Application extends com.vinkas.library.Application implements IReminders {
 
     private Reminders reminders;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Reminder.setContentActivity(MainActivity.class);
+    }
 
     @Override
     public Reminders getReminders() {

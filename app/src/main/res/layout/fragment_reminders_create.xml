@@ -17,6 +17,7 @@
             android:id="@+id/etTitle"
             style="@style/Widget.Vinkas.Button.Borderless.Post"
             android:drawableLeft="@drawable/ic_create_black_24dp"
+            android:drawableStart="@drawable/ic_create_black_24dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="Book train ticket" />
@@ -24,28 +25,12 @@
         <Button
             android:id="@+id/btAt"
             style="@style/Widget.Vinkas.Button.Borderless.Post"
+            android:drawableLeft="@drawable/ic_access_alarm_black_24dp"
+            android:drawableStart="@drawable/ic_access_alarm_black_24dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:clickable="false"
+            android:clickable="true"
             android:text="at" />
-
-        <Button
-            android:id="@+id/btDate"
-            style="@style/Widget.Vinkas.Button.Borderless.Post"
-            android:drawableLeft="@drawable/ic_today_black_24dp"
-            android:drawableStart="@drawable/ic_today_black_24dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="Tomorrow" />
-
-        <TextView
-            android:id="@+id/btTime"
-            style="@style/Widget.Vinkas.Button.Borderless.Post"
-            android:drawableLeft="@drawable/ic_access_time_black_24dp"
-            android:drawableStart="@drawable/ic_access_time_black_24dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="05.00 PM" />
     </com.vinkas.layout.FlowLayout>
 
 </RelativeLayout>

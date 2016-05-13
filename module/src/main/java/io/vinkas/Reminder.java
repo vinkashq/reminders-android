@@ -2,10 +2,16 @@ package io.vinkas;
 
 import android.app.AlarmManager;
 import android.app.Notification;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
+import android.os.Parcelable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.firebase.ui.RecyclerAdapter;
+import com.vinkas.activity.Activity;
+import com.vinkas.module.reminders.R;
 import com.vinkas.notification.Scheduler;
 import com.vinkas.util.Helper;
 
@@ -24,10 +30,9 @@ public class Reminder extends ListItem<Reminders> {
         schedule();
     }
 
-    public void setTimeStamp(int day, int month, int year, int hour, int min) {
+    public void setTimestamp(int day, int month, int year, int hour, int min) {
         Helper helper = Helper.getInstance();
         setTimestamp(helper.toTimeStamp(day, month, year, hour, min));
-
     }
 
     private String title;
@@ -60,6 +65,7 @@ public class Reminder extends ListItem<Reminders> {
 
 
     private int alarm_rtc_type;
+
     @JsonIgnore
     public int getAlarm_RTC_TYPE() {
         return alarm_rtc_type;
@@ -70,15 +76,32 @@ public class Reminder extends ListItem<Reminders> {
         alarm_rtc_type = value;
     }
 
+    private static Class<?> contentActivity;
+
+    public static Class<?> getContentActivity() {
+        return contentActivity;
+    }
+
+    public static void setContentActivity(Class<?> contentActivity) {
+        Reminder.contentActivity = contentActivity;
+    }
+
     public void schedule() {
         Scheduler scheduler = Scheduler.getInstance();
         Notification.Builder builder = scheduler.getNotificationBuilder();
         Notification notification;
+        Intent editActivity = new Intent(scheduler.getAndroidContext(), getContentActivity());
+        editActivity.putExtra("Key", getKey());
+        PendingIntent contentIndent = PendingIntent
+                .getActivity(scheduler.getAndroidContext(),
+                        getKey().hashCode(), editActivity, 0);
         builder = builder.setWhen(getTimestamp())
                 .setContentTitle(getTitle())
                 .setContentText(getTitle())
                 .setAutoCancel(false)
-                .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
+                .setOngoing(true)
+                .setContentIntent(contentIndent)
+                .setSmallIcon(R.drawable.ic_access_alarm_black_24dp)
                 .setDefaults(Notification.DEFAULT_SOUND);
         if (Build.VERSION.SDK_INT >= 17)
             builder.setShowWhen(true);
