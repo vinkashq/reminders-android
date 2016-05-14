@@ -1,4 +1,4 @@
-package com.vinkas.layout;
+package com.vinkas.ui;
 
 import android.content.Context;
 import android.content.res.TypedArray;

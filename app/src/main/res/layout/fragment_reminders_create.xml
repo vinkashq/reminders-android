@@ -2,9 +2,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragment.CreateFragment">
+    tools:context=".fragment.ItemFragment">
 
-    <com.vinkas.layout.FlowLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <com.vinkas.ui.FlowLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:vinkas="http://schemas.android.com/apk/res/com.vinkas.reminders"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -31,6 +31,6 @@
             android:layout_height="wrap_content"
             android:clickable="true"
             android:text="at" />
-    </com.vinkas.layout.FlowLayout>
+    </com.vinkas.ui.FlowLayout>
 
 </RelativeLayout>

@@ -6,4 +6,9 @@
         android:icon="@drawable/ic_check_white_24dp"
         android:title="Create"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/delete"
+        android:icon="@drawable/ic_clear_white_24dp"
+        android:title="Delete"
+        app:showAsAction="always" />
 </menu>

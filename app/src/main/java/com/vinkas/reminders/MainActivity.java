@@ -10,17 +10,21 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.vinkas.reminders.fragment.CreateFragment;
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
+import com.vinkas.reminders.fragment.ItemFragment;
 
 import com.vinkas.activity.NavigationDrawerActivity;
 import com.vinkas.reminders.fragment.ListFragment;
+import com.vinkas.util.Helper;
 
 import io.vinkas.Reminder;
 
 /**
  * Created by Vinoth on 6-5-16.
  */
-public class MainActivity extends NavigationDrawerActivity implements CreateFragment.Listener, ListFragment.OnListFragmentInteractionListener, ViewPager.OnPageChangeListener {
+public class MainActivity extends NavigationDrawerActivity implements ItemFragment.Listener, ListFragment.Listener, ViewPager.OnPageChangeListener {
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -31,6 +35,7 @@ public class MainActivity extends NavigationDrawerActivity implements CreateFrag
     public void onPageSelected(int position) {
         switch (position) {
             case 0:
+                itemFragment.prepareNew();
                 getFab().setVisibility(View.VISIBLE);
                 getSupportActionBar().setDisplayShowTitleEnabled(true);
                 getSupportActionBar().setHomeButtonEnabled(false);
@@ -53,8 +58,15 @@ public class MainActivity extends NavigationDrawerActivity implements CreateFrag
     }
 
     @Override
-    public void onListFragmentInteraction(Reminder reminder) {
+    public void onItemClick(Reminder reminder) {
+        itemFragment.prepareEdit(reminder);
+        mViewPager.setCurrentItem(1);
+    }
 
+    public ItemFragment getItemFragment() {
+        if (itemFragment == null)
+            itemFragment = ItemFragment.newInstance();
+        return itemFragment;
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
@@ -68,7 +80,7 @@ public class MainActivity extends NavigationDrawerActivity implements CreateFrag
             if (position == 0)
                 return ListFragment.newInstance(1);
             else
-                return CreateFragment.newInstance("", "");
+                return getItemFragment();
         }
 
         @Override
@@ -97,7 +109,7 @@ public class MainActivity extends NavigationDrawerActivity implements CreateFrag
     }
 
     @Override
-    public void onCreate(Reminder reminder) {
+    public void onSave(int mode, Reminder reminder) {
         mViewPager.setCurrentItem(0);
     }
 
@@ -132,6 +144,25 @@ public class MainActivity extends NavigationDrawerActivity implements CreateFrag
         mViewPager = (ViewPager) findViewById(R.id.viewPager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.addOnPageChangeListener(this);
+        String key = getIntent().getStringExtra("Key");
+        if (key != null) {
+            getApp().getReminders().child(key).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    if(snapshot.exists()) {
+                        Reminder item = snapshot.getValue(Reminder.class);
+                        item.setKey(snapshot.getKey());
+                        item.setPriority(snapshot.getPriority());
+                        onItemClick(item);
+                    }
+                }
+
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+                    Helper.onError(firebaseError);
+                }
+            });
+        }
     }
 
     @Override
@@ -144,8 +175,11 @@ public class MainActivity extends NavigationDrawerActivity implements CreateFrag
         }
     }
 
+    ItemFragment itemFragment;
+
     @Override
     public void onFabClick(View v) {
+        itemFragment.prepareNew();
         mViewPager.setCurrentItem(1);
     }
 

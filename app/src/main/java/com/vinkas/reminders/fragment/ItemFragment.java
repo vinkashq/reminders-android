@@ -4,7 +4,6 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.format.DateUtils;
@@ -17,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.vinkas.reminders.Application;
@@ -29,39 +27,32 @@ import java.util.Calendar;
 
 import io.vinkas.Reminder;
 
-public class CreateFragment extends Fragment implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
+public class ItemFragment extends Fragment implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
     private Listener mListener;
 
-    public CreateFragment() {
+    public ItemFragment() {
     }
 
-    public static CreateFragment newInstance(String param1, String param2) {
-        CreateFragment fragment = new CreateFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
+    public static ItemFragment newInstance() {
+        ItemFragment fragment = new ItemFragment();
         return fragment;
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
-        inflater.inflate(R.menu.fragment_reminders_create, menu);
+        inflater.inflate(R.menu.fragment_reminders_item, menu);
+        MenuItem delete = menu.findItem(R.id.delete);
+        delete.setVisible((mode == MODE_UPDATE));
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.create)
-            addReminder();
+            saveReminder();
+        else if (item.getItemId() == R.id.delete)
+            deleteReminder();
         return super.onOptionsItemSelected(item);
     }
 
@@ -69,10 +60,6 @@ public class CreateFragment extends Fragment implements DatePickerDialog.OnDateS
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     EditText etTitle;
@@ -90,10 +77,6 @@ public class CreateFragment extends Fragment implements DatePickerDialog.OnDateS
     public View initialize(View view) {
         etTitle = (EditText) view.findViewById(R.id.etTitle);
         btAt = (Button) view.findViewById(R.id.btAt);
-        dt = new DateTimePickerDialog(getContext(), this, this, System.currentTimeMillis() + (1000 * 60 * 60 * 25));
-        Calendar c = dt.getCalendar();
-        onDateSet(null, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
-        onTimeSet(null, c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
         btAt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -106,31 +89,53 @@ public class CreateFragment extends Fragment implements DatePickerDialog.OnDateS
     @Override
     public void onDateSet(DatePicker datePicker, int year, int monthOfYear, int dayOfMonth) {
         btAt.setText(DateUtils.getRelativeDateTimeString(getContext(), dt.getTimestamp(), DateUtils.MINUTE_IN_MILLIS, DateUtils.YEAR_IN_MILLIS, DateUtils.FORMAT_ABBREV_ALL));
-        //btDate.setText(String.format("%02d", dayOfMonth) + "/" + String.format("%02d", monthOfYear + 1) + "/" + year);
     }
 
     @Override
     public void onTimeSet(TimePicker timePicker, int hourOfDay, int minute) {
         btAt.setText(DateUtils.getRelativeDateTimeString(getContext(), dt.getTimestamp(), DateUtils.MINUTE_IN_MILLIS, DateUtils.YEAR_IN_MILLIS, DateUtils.FORMAT_ABBREV_ALL));
-        /*String am_pm = "AM";
-
-        if (hourOfDay >= 12) {
-            hourOfDay = hourOfDay - 12;
-            am_pm = "PM";
-        }
-        if (hourOfDay == 0)
-            hourOfDay = 12;
-        btTime.setText(String.format("%02d", hourOfDay) + ":" + String.format("%02d", minute) + " " + am_pm);*/
     }
 
-    public void addReminder() {
-        Reminder reminder = new Reminder();
+    private Reminder reminder;
+    private int mode;
+    public static final int MODE_CREATE = 0;
+    public static final int MODE_UPDATE = 1;
+    public static final int MODE_DELETE = 2;
+
+    public void setDateTimePicker(long timestamp) {
+        dt = new DateTimePickerDialog(getContext(), this, this, timestamp);
+        Calendar c = dt.getCalendar();
+        onDateSet(null, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
+        onTimeSet(null, c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
+    }
+
+    public void prepareEdit(Reminder reminder) {
+        this.reminder = reminder;
+        mode = MODE_UPDATE;
+        setDateTimePicker(reminder.getTimestamp());
+        etTitle.setText(reminder.getTitle());
+    }
+
+    public void prepareNew() {
+        reminder = new Reminder();
+        mode = MODE_CREATE;
+        etTitle.setText("");
+        setDateTimePicker(System.currentTimeMillis() + (1000 * 60 * 60 * 24) + (1000 * 60 * 10));
+    }
+
+    public void saveReminder() {
         reminder.setTitle(etTitle.getText().toString());
         reminder.setTimestamp(dt.getTimestamp());
         reminder.setStatus(Reminder.STATUS_ACTIVE);
         ((Application) Helper.getApplication()).getReminders().add(reminder, null);
-        mListener.onCreate(reminder);
-        etTitle.setText("");
+        mListener.onSave(mode, reminder);
+        prepareNew();
+    }
+
+    public void deleteReminder() {
+        ((Application) Helper.getApplication()).getReminders().remove(reminder, null);
+        mListener.onSave(MODE_DELETE, reminder);
+        prepareNew();
     }
 
     public void onButtonPressed(Uri uri) {
@@ -157,8 +162,7 @@ public class CreateFragment extends Fragment implements DatePickerDialog.OnDateS
     }
 
     public interface Listener {
-        void onCreate(Reminder reminder);
-
+        void onSave(int mode, Reminder reminder);
         void onFragmentInteraction(Uri uri);
     }
 }

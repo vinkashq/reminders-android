@@ -5,6 +5,8 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Parcelable;
 
@@ -86,6 +88,13 @@ public class Reminder extends ListItem<Reminders> {
         Reminder.contentActivity = contentActivity;
     }
 
+    static Bitmap largeIcon;
+    public static Bitmap getLargeIcon() {
+        if(largeIcon == null)
+            largeIcon = BitmapFactory.decodeResource(Helper.getApplication().getResources(), R.drawable.ic_access_alarm_white_48dp);
+        return largeIcon;
+    }
+
     public void schedule() {
         Scheduler scheduler = Scheduler.getInstance();
         Notification.Builder builder = scheduler.getNotificationBuilder();
@@ -101,7 +110,8 @@ public class Reminder extends ListItem<Reminders> {
                 .setAutoCancel(false)
                 .setOngoing(true)
                 .setContentIntent(contentIndent)
-                .setSmallIcon(R.drawable.ic_access_alarm_black_24dp)
+                .setSmallIcon(R.drawable.ic_access_alarm_white_24dp)
+                .setLargeIcon(getLargeIcon())
                 .setDefaults(Notification.DEFAULT_SOUND);
         if (Build.VERSION.SDK_INT >= 17)
             builder.setShowWhen(true);
@@ -109,6 +119,7 @@ public class Reminder extends ListItem<Reminders> {
             notification = builder.build();
         else
             notification = builder.getNotification();
+
         scheduler.schedule(getKey().hashCode(), notification, getTimestamp(), getAlarm_RTC_TYPE());
     }
 

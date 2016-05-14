@@ -12,17 +12,17 @@ import android.view.ViewGroup;
 
 import com.vinkas.reminders.Application;
 import com.vinkas.reminders.R;
-import com.vinkas.reminders.adapter.ReminderHolder;
-import com.vinkas.reminders.adapter.RemindersRecyclerAdapter;
+import com.vinkas.reminders.ViewHolder;
 import com.vinkas.util.Helper;
 
 import io.vinkas.Reminder;
+import io.vinkas.ui.RecyclerAdapter;
 
 public class ListFragment extends Fragment {
 
     private static final String ARG_COLUMN_COUNT = "column-count";
     private int mColumnCount = 1;
-    private OnListFragmentInteractionListener mListener;
+    private Listener mListener;
 
     public ListFragment() {
     }
@@ -39,7 +39,6 @@ public class ListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
@@ -59,7 +58,19 @@ public class ListFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new RemindersRecyclerAdapter(Reminder.class, R.layout.fragment_reminders_item, ReminderHolder.class, ((Application) Helper.getApplication()).getReminders()));
+            //recyclerView.setAdapter(new RemindersRecyclerAdapter(Reminder.class, R.layout.fragment_reminders_item, ReminderHolder.class, ((Application) Helper.getApplication()).getReminders()));
+            recyclerView.setAdapter(new RecyclerAdapter<Reminder, ViewHolder>(Reminder.class, R.layout.fragment_reminders_item, ViewHolder.class, ((Application) Helper.getApplication()).getReminders()) {
+                @Override
+                protected void populateViewHolder(ViewHolder viewHolder, Reminder model, int position) {
+                    viewHolder.setReminder(model);
+                    viewHolder.setOnClickListener(new ViewHolder.OnClickListener() {
+                        @Override
+                        public void onClick(View view, Reminder reminder) {
+                            mListener.onItemClick(reminder);
+                        }
+                    });
+                }
+            });
         }
         return view;
     }
@@ -68,8 +79,8 @@ public class ListFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnListFragmentInteractionListener) {
-            mListener = (OnListFragmentInteractionListener) context;
+        if (context instanceof Listener) {
+            mListener = (Listener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnListFragmentInteractionListener");
@@ -82,7 +93,7 @@ public class ListFragment extends Fragment {
         mListener = null;
     }
 
-    public interface OnListFragmentInteractionListener {
-        void onListFragmentInteraction(Reminder reminder);
+    public interface Listener {
+        void onItemClick(Reminder reminder);
     }
 }
