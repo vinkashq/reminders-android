@@ -1,4 +1,4 @@
-package com.vinkas.reminders;
+package com.vinkas.reminders.open;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -8,15 +8,11 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
-import com.vinkas.reminders.R;
 import com.vinkas.util.Helper;
-
-import java.util.Calendar;
 
 import io.vinkas.Reminder;
 

@@ -8,7 +8,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.vinkas.reminders.R;
+import com.vinkas.reminders.open.R;
 
 public class FlowLayout extends ViewGroup {
 

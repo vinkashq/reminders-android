@@ -5,6 +5,7 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
@@ -89,24 +90,24 @@ public class Reminder extends ListItem<Reminders> {
     }
 
     static Bitmap largeIcon;
+
     public static Bitmap getLargeIcon() {
-        if(largeIcon == null)
+        if (largeIcon == null)
             largeIcon = BitmapFactory.decodeResource(Helper.getApplication().getResources(), R.drawable.ic_access_alarm_white_48dp);
         return largeIcon;
     }
 
     public void schedule() {
-        Scheduler scheduler = Scheduler.getInstance();
-        Notification.Builder builder = scheduler.getNotificationBuilder();
+        Notification.Builder builder = getScheduler().getNotificationBuilder();
         Notification notification;
-        Intent editActivity = new Intent(scheduler.getAndroidContext(), getContentActivity());
+        Intent editActivity = new Intent(getScheduler().getAndroidContext(), getContentActivity());
         editActivity.putExtra("Key", getKey());
         PendingIntent contentIndent = PendingIntent
-                .getActivity(scheduler.getAndroidContext(),
+                .getActivity(getScheduler().getAndroidContext(),
                         getKey().hashCode(), editActivity, 0);
         builder = builder.setWhen(getTimestamp())
                 .setContentTitle(getTitle())
-                .setContentText(getTitle())
+                //.setContentText(getTitle())
                 .setAutoCancel(false)
                 .setOngoing(true)
                 .setContentIntent(contentIndent)
@@ -119,8 +120,45 @@ public class Reminder extends ListItem<Reminders> {
             notification = builder.build();
         else
             notification = builder.getNotification();
+        getScheduler().schedule(getKey().hashCode(), notification, getTimestamp(), getAlarm_RTC_TYPE());
 
-        scheduler.schedule(getKey().hashCode(), notification, getTimestamp(), getAlarm_RTC_TYPE());
+        SharedPreferences.Editor editor = getPref().edit();
+        editor.putLong(getKey(), System.currentTimeMillis());
+        editor.putString(getKey() + "_Title", getTitle());
+        editor.putLong(getKey() + "_Timestamp", getTimestamp());
+        editor.commit();
+    }
+
+    public Boolean scheduleIfNotExist() {
+        if(isScheduled())
+            return false;
+        schedule();
+        return true;
+    }
+
+    @JsonIgnore
+    public Boolean isScheduled() {
+        if(getPref().contains(getKey())) {
+            if(getPref().getString(getKey() + "_Title", "").equals(getTitle()) &&
+                    getPref().getLong(getKey() + "_Timestamp", 0) == getTimestamp())
+                return true;
+        }
+        return false;
+    }
+
+    Scheduler scheduler;
+    protected Scheduler getScheduler() {
+        if(scheduler == null) {
+            scheduler = Scheduler.getInstance();
+        }
+        return scheduler;
+    }
+
+    SharedPreferences pref;
+    protected SharedPreferences getPref() {
+        if(pref == null)
+            pref = getScheduler().getAndroidContext().getSharedPreferences("Reminder", Context.MODE_PRIVATE);
+        return pref;
     }
 
     public Reminder() {

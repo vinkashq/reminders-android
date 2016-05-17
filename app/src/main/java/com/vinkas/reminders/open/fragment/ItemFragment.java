@@ -1,4 +1,4 @@
-package com.vinkas.reminders.fragment;
+package com.vinkas.reminders.open.fragment;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -18,8 +18,11 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
-import com.vinkas.reminders.Application;
-import com.vinkas.reminders.R;
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
+import com.vinkas.reminders.open.Application;
+import com.vinkas.reminders.open.R;
 import com.vinkas.ui.DateTimePickerDialog;
 import com.vinkas.util.Helper;
 
@@ -38,11 +41,40 @@ public class ItemFragment extends Fragment implements DatePickerDialog.OnDateSet
         return fragment;
     }
 
+    private Reminder editR;
+
+    public static ItemFragment newInstance(String key) {
+        final ItemFragment fragment = newInstance();
+        Application app = (Application) Helper.getApplication();
+        app.getReminders().child(key).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Reminder item = snapshot.getValue(Reminder.class);
+                    item.setKey(snapshot.getKey());
+                    item.setPriority(snapshot.getPriority());
+                    if (fragment.etTitle != null)
+                        fragment.prepareEdit(item);
+                    else
+                        fragment.editR = item;
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                Helper.onError(firebaseError);
+            }
+        });
+        return fragment;
+    }
+
+    MenuItem delete;
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
         inflater.inflate(R.menu.fragment_reminders_item, menu);
-        MenuItem delete = menu.findItem(R.id.delete);
+        delete = menu.findItem(R.id.delete);
         delete.setVisible((mode == MODE_UPDATE));
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -71,6 +103,8 @@ public class ItemFragment extends Fragment implements DatePickerDialog.OnDateSet
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_reminders_create, container, false);
         initialize(view);
+        if (editR != null)
+            prepareEdit(editR);
         return view;
     }
 
@@ -109,11 +143,13 @@ public class ItemFragment extends Fragment implements DatePickerDialog.OnDateSet
         onTimeSet(null, c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
     }
 
-    public void prepareEdit(Reminder reminder) {
-        this.reminder = reminder;
+    public void prepareEdit(Reminder item) {
+        this.reminder = item;
         mode = MODE_UPDATE;
         setDateTimePicker(reminder.getTimestamp());
         etTitle.setText(reminder.getTitle());
+        if (delete != null)
+            delete.setVisible(true);
     }
 
     public void prepareNew() {
@@ -163,6 +199,7 @@ public class ItemFragment extends Fragment implements DatePickerDialog.OnDateSet
 
     public interface Listener {
         void onSave(int mode, Reminder reminder);
+
         void onFragmentInteraction(Uri uri);
     }
 }

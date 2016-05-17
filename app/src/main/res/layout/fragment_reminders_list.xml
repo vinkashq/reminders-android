@@ -9,5 +9,5 @@
     android:paddingTop="8dp"
     android:paddingBottom="8dp"
     app:layoutManager="LinearLayoutManager"
-    tools:context="com.vinkas.reminders.fragment.ListFragment"
+    tools:context=".open.fragment.ListFragment"
     tools:listitem="@layout/fragment_reminders_item" />

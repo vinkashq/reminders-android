@@ -1,4 +1,4 @@
-package com.vinkas.reminders;
+package com.vinkas.reminders.open;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,14 +10,10 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.firebase.client.DataSnapshot;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
-import com.vinkas.reminders.fragment.ItemFragment;
+import com.vinkas.reminders.open.fragment.ItemFragment;
 
 import com.vinkas.activity.NavigationDrawerActivity;
-import com.vinkas.reminders.fragment.ListFragment;
-import com.vinkas.util.Helper;
+import com.vinkas.reminders.open.fragment.ListFragment;
 
 import io.vinkas.Reminder;
 
@@ -63,12 +59,6 @@ public class MainActivity extends NavigationDrawerActivity implements ItemFragme
         mViewPager.setCurrentItem(1);
     }
 
-    public ItemFragment getItemFragment() {
-        if (itemFragment == null)
-            itemFragment = ItemFragment.newInstance();
-        return itemFragment;
-    }
-
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         public SectionsPagerAdapter(FragmentManager fm) {
@@ -79,8 +69,14 @@ public class MainActivity extends NavigationDrawerActivity implements ItemFragme
         public Fragment getItem(int position) {
             if (position == 0)
                 return ListFragment.newInstance(1);
-            else
-                return getItemFragment();
+            else if (editKey == null)
+                itemFragment = ItemFragment.newInstance();
+            else {
+                itemFragment = ItemFragment.newInstance(editKey);
+                mViewPager.setCurrentItem(1);
+                editKey = null;
+            }
+            return itemFragment;
         }
 
         @Override
@@ -105,7 +101,6 @@ public class MainActivity extends NavigationDrawerActivity implements ItemFragme
 
     @Override
     public void onFragmentInteraction(Uri uri) {
-
     }
 
     @Override
@@ -121,6 +116,7 @@ public class MainActivity extends NavigationDrawerActivity implements ItemFragme
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        editKey = getIntent().getStringExtra("Key");
         setLayout(R.layout.activity_main);
         setMenu(R.menu.activity_main);
         setNavigationMenu(R.menu.activity_main_drawer);
@@ -138,32 +134,14 @@ public class MainActivity extends NavigationDrawerActivity implements ItemFragme
     @Override
     public void setContent(View content) {
         super.setContent(content);
-
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         mViewPager = (ViewPager) findViewById(R.id.viewPager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.addOnPageChangeListener(this);
-        String key = getIntent().getStringExtra("Key");
-        if (key != null) {
-            getApp().getReminders().child(key).addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot snapshot) {
-                    if(snapshot.exists()) {
-                        Reminder item = snapshot.getValue(Reminder.class);
-                        item.setKey(snapshot.getKey());
-                        item.setPriority(snapshot.getPriority());
-                        onItemClick(item);
-                    }
-                }
-
-                @Override
-                public void onCancelled(FirebaseError firebaseError) {
-                    Helper.onError(firebaseError);
-                }
-            });
-        }
     }
+
+    private String editKey;
 
     @Override
     public void onBackPressed() {

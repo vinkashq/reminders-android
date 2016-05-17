@@ -1,4 +1,4 @@
-package com.vinkas.reminders.fragment;
+package com.vinkas.reminders.open.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -6,13 +6,15 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.vinkas.reminders.Application;
-import com.vinkas.reminders.R;
-import com.vinkas.reminders.ViewHolder;
+import com.firebase.client.DataSnapshot;
+import com.vinkas.reminders.open.Application;
+import com.vinkas.reminders.open.R;
+import com.vinkas.reminders.open.ViewHolder;
 import com.vinkas.util.Helper;
 
 import io.vinkas.Reminder;
@@ -58,7 +60,6 @@ public class ListFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            //recyclerView.setAdapter(new RemindersRecyclerAdapter(Reminder.class, R.layout.fragment_reminders_item, ReminderHolder.class, ((Application) Helper.getApplication()).getReminders()));
             recyclerView.setAdapter(new RecyclerAdapter<Reminder, ViewHolder>(Reminder.class, R.layout.fragment_reminders_item, ViewHolder.class, ((Application) Helper.getApplication()).getReminders()) {
                 @Override
                 protected void populateViewHolder(ViewHolder viewHolder, Reminder model, int position) {
@@ -69,6 +70,13 @@ public class ListFragment extends Fragment {
                             mListener.onItemClick(reminder);
                         }
                     });
+                }
+
+                @Override
+                protected Reminder parseSnapshot(DataSnapshot snapshot) {
+                    Reminder reminder = super.parseSnapshot(snapshot);
+                    Log.d("Schedule_" + reminder.getTitle(), reminder.scheduleIfNotExist().toString());
+                    return reminder;
                 }
             });
         }
