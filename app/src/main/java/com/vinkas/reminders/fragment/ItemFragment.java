@@ -1,11 +1,10 @@
-package com.vinkas.reminders.open.fragment;
+package com.vinkas.reminders.fragment;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,13 +17,13 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
-import com.firebase.client.DataSnapshot;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
-import com.vinkas.reminders.open.Application;
-import com.vinkas.reminders.open.R;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
+import com.vinkas.reminders.Fragment;
+import com.vinkas.reminders.R;
+import com.vinkas.reminders.util.Helper;
 import com.vinkas.ui.DateTimePickerDialog;
-import com.vinkas.util.Helper;
 
 import java.util.Calendar;
 
@@ -45,8 +44,8 @@ public class ItemFragment extends Fragment implements DatePickerDialog.OnDateSet
 
     public static ItemFragment newInstance(String key) {
         final ItemFragment fragment = newInstance();
-        Application app = (Application) Helper.getApplication();
-        app.getReminders().child(key).addListenerForSingleValueEvent(new ValueEventListener() {
+        Helper helper = Helper.getInstance();
+        helper.getReminders().getReference().child(key).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.exists()) {
@@ -59,10 +58,9 @@ public class ItemFragment extends Fragment implements DatePickerDialog.OnDateSet
                         fragment.editR = item;
                 }
             }
-
             @Override
-            public void onCancelled(FirebaseError firebaseError) {
-                Helper.onError(firebaseError);
+            public void onCancelled(DatabaseError databaseError) {
+                Helper.onError(databaseError);
             }
         });
         return fragment;
@@ -163,13 +161,13 @@ public class ItemFragment extends Fragment implements DatePickerDialog.OnDateSet
         reminder.setTitle(etTitle.getText().toString());
         reminder.setTimestamp(dt.getTimestamp());
         reminder.setStatus(Reminder.STATUS_ACTIVE);
-        ((Application) Helper.getApplication()).getReminders().add(reminder, null);
+        getHelper().getReminders().add(reminder, null);
         mListener.onSave(mode, reminder);
         prepareNew();
     }
 
     public void deleteReminder() {
-        ((Application) Helper.getApplication()).getReminders().remove(reminder, null);
+        getHelper().getReminders().remove(reminder, null);
         mListener.onSave(MODE_DELETE, reminder);
         prepareNew();
     }

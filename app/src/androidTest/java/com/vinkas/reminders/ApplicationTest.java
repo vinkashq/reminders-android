@@ -1,4 +1,4 @@
-package com.vinkas.reminders.open;
+package com.vinkas.reminders;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

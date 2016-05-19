@@ -1,4 +1,4 @@
-package com.vinkas.reminders.open.fragment;
+package com.vinkas.reminders.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -11,11 +11,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.firebase.client.DataSnapshot;
-import com.vinkas.reminders.open.Application;
-import com.vinkas.reminders.open.R;
-import com.vinkas.reminders.open.ViewHolder;
-import com.vinkas.util.Helper;
+import com.google.firebase.database.DataSnapshot;
+import com.vinkas.reminders.R;
+import com.vinkas.reminders.ViewHolder;
+import com.vinkas.reminders.util.Helper;
 
 import io.vinkas.Reminder;
 import io.vinkas.ui.RecyclerAdapter;
@@ -60,7 +59,8 @@ public class ListFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new RecyclerAdapter<Reminder, ViewHolder>(Reminder.class, R.layout.fragment_reminders_item, ViewHolder.class, ((Application) Helper.getApplication()).getReminders()) {
+            Helper helper = Helper.getInstance();
+            recyclerView.setAdapter(new RecyclerAdapter<Reminder, ViewHolder>(Reminder.class, R.layout.fragment_reminders_item, ViewHolder.class, helper.getReminders().getReference()) {
                 @Override
                 protected void populateViewHolder(ViewHolder viewHolder, Reminder model, int position) {
                     viewHolder.setReminder(model);

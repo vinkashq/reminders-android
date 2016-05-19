@@ -1,4 +1,4 @@
-package com.vinkas.reminders.open;
+package com.vinkas.reminders;
 
 import org.junit.Test;
 

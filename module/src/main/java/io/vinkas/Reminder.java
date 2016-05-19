@@ -9,14 +9,12 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
-import android.os.Parcelable;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.firebase.ui.RecyclerAdapter;
-import com.vinkas.activity.Activity;
 import com.vinkas.module.reminders.R;
 import com.vinkas.notification.Scheduler;
 import com.vinkas.util.Helper;
+
+import com.google.firebase.database.Exclude;
 
 /**
  * Created by Vinoth on 6-5-16.
@@ -69,12 +67,12 @@ public class Reminder extends ListItem<Reminders> {
 
     private int alarm_rtc_type;
 
-    @JsonIgnore
+    @Exclude
     public int getAlarm_RTC_TYPE() {
         return alarm_rtc_type;
     }
 
-    @JsonIgnore
+    @Exclude
     public void setAlarm_rtc_type(int value) {
         alarm_rtc_type = value;
     }
@@ -136,7 +134,7 @@ public class Reminder extends ListItem<Reminders> {
         return true;
     }
 
-    @JsonIgnore
+    @Exclude
     public Boolean isScheduled() {
         if(getPref().contains(getKey())) {
             if(getPref().getString(getKey() + "_Title", "").equals(getTitle()) &&

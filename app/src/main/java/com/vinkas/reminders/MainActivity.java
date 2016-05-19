@@ -1,5 +1,6 @@
-package com.vinkas.reminders.open;
+package com.vinkas.reminders;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,10 +11,11 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.vinkas.reminders.open.fragment.ItemFragment;
+import com.vinkas.auth.GoogleActivity;
+import com.vinkas.reminders.fragment.ItemFragment;
 
-import com.vinkas.activity.NavigationDrawerActivity;
-import com.vinkas.reminders.open.fragment.ListFragment;
+import com.vinkas.app.NavigationDrawerActivity;
+import com.vinkas.reminders.fragment.ListFragment;
 
 import io.vinkas.Reminder;
 
@@ -128,7 +130,20 @@ public class MainActivity extends NavigationDrawerActivity implements ItemFragme
             mViewPager.setCurrentItem(0);
             return false;
         }
+        if(item.getItemId() == R.id.googleSignIn) {
+            Intent intent = new Intent(this, GoogleActivity.class);
+            startActivityForResult(intent, 1);
+        }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        if(item.getTitle() == "Google") {
+            Intent intent = new Intent(this, GoogleActivity.class);
+            startActivityForResult(intent, 0);
+        }
+        return super.onNavigationItemSelected(item);
     }
 
     @Override

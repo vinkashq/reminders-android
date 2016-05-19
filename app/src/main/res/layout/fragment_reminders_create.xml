@@ -2,10 +2,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragment.ItemFragment">
+    tools:context="com.vinkas.reminders.fragment.ItemFragment">
 
     <com.vinkas.ui.FlowLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:vinkas="http://schemas.android.com/apk/res/com.vinkas.reminders.open"
+        xmlns:vinkas="http://schemas.android.com/apk/res/com.vinkas.reminders"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
