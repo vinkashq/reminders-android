@@ -2,13 +2,12 @@ package com.vinkas.reminders.util;
 
 import com.vinkas.reminders.Application;
 
-import io.vinkas.IReminders;
-import io.vinkas.Reminders;
+import com.vinkas.firebase.reminders.List;
 
 /**
  * Created by Vinoth on 19-5-16.
  */
-public class Helper extends com.vinkas.util.Helper implements IReminders {
+public class Helper extends com.vinkas.util.Helper {
 
     public static Helper getInstance() {
         return getApplication().getHelper();
@@ -18,21 +17,19 @@ public class Helper extends com.vinkas.util.Helper implements IReminders {
         return (Application) application;
     }
 
-    private Reminders reminders;
+    private List list;
 
-    @Override
-    public Reminders getReminders() {
-        return reminders;
+    public List getList() {
+        return list;
     }
 
-    @Override
-    public void setReminders(Reminders items) {
-        reminders = items;
+    public void setList(List items) {
+        list = items;
     }
 
     @Override
     public void onReady(String userId) {
         super.onReady(userId);
-        setReminders(new Reminders("reminders", userId));
+        setList(new List("reminders", userId));
     }
 }

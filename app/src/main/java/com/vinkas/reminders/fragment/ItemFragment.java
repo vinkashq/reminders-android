@@ -20,16 +20,16 @@ import android.widget.TimePicker;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
-import com.vinkas.reminders.Fragment;
+import com.vinkas.app.Fragment;
 import com.vinkas.reminders.R;
 import com.vinkas.reminders.util.Helper;
 import com.vinkas.ui.DateTimePickerDialog;
 
 import java.util.Calendar;
 
-import io.vinkas.Reminder;
+import com.vinkas.firebase.reminders.ListItem;
 
-public class ItemFragment extends Fragment implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
+public class ItemFragment extends Fragment<Helper> implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
     private Listener mListener;
 
     public ItemFragment() {
@@ -40,22 +40,22 @@ public class ItemFragment extends Fragment implements DatePickerDialog.OnDateSet
         return fragment;
     }
 
-    private Reminder editR;
+    private ListItem editR;
 
     public static ItemFragment newInstance(String key) {
         final ItemFragment fragment = newInstance();
         Helper helper = Helper.getInstance();
-        helper.getReminders().getReference().child(key).addListenerForSingleValueEvent(new ValueEventListener() {
+        helper.getList().getReference().child(key).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    Reminder item = snapshot.getValue(Reminder.class);
-                    item.setKey(snapshot.getKey());
-                    item.setPriority(snapshot.getPriority());
+                    ListItem listItem = snapshot.getValue(ListItem.class);
+                    listItem.setKey(snapshot.getKey());
+                    listItem.setPriority(snapshot.getPriority());
                     if (fragment.etTitle != null)
-                        fragment.prepareEdit(item);
+                        fragment.prepareEdit(listItem);
                     else
-                        fragment.editR = item;
+                        fragment.editR = listItem;
                 }
             }
             @Override
@@ -99,7 +99,7 @@ public class ItemFragment extends Fragment implements DatePickerDialog.OnDateSet
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_reminders_create, container, false);
+        View view = inflater.inflate(R.layout.fragment_item_manage, container, false);
         initialize(view);
         if (editR != null)
             prepareEdit(editR);
@@ -128,7 +128,7 @@ public class ItemFragment extends Fragment implements DatePickerDialog.OnDateSet
         btAt.setText(DateUtils.getRelativeDateTimeString(getContext(), dt.getTimestamp(), DateUtils.MINUTE_IN_MILLIS, DateUtils.YEAR_IN_MILLIS, DateUtils.FORMAT_ABBREV_ALL));
     }
 
-    private Reminder reminder;
+    private ListItem listItem;
     private int mode;
     public static final int MODE_CREATE = 0;
     public static final int MODE_UPDATE = 1;
@@ -141,34 +141,34 @@ public class ItemFragment extends Fragment implements DatePickerDialog.OnDateSet
         onTimeSet(null, c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
     }
 
-    public void prepareEdit(Reminder item) {
-        this.reminder = item;
+    public void prepareEdit(ListItem listItem) {
+        this.listItem = listItem;
         mode = MODE_UPDATE;
-        setDateTimePicker(reminder.getTimestamp());
-        etTitle.setText(reminder.getTitle());
+        setDateTimePicker(this.listItem.getTimestamp());
+        etTitle.setText(this.listItem.getTitle());
         if (delete != null)
             delete.setVisible(true);
     }
 
     public void prepareNew() {
-        reminder = new Reminder();
+        listItem = new ListItem();
         mode = MODE_CREATE;
         etTitle.setText("");
         setDateTimePicker(System.currentTimeMillis() + (1000 * 60 * 60 * 24) + (1000 * 60 * 10));
     }
 
     public void saveReminder() {
-        reminder.setTitle(etTitle.getText().toString());
-        reminder.setTimestamp(dt.getTimestamp());
-        reminder.setStatus(Reminder.STATUS_ACTIVE);
-        getHelper().getReminders().add(reminder, null);
-        mListener.onSave(mode, reminder);
+        listItem.setTitle(etTitle.getText().toString());
+        listItem.setTimestamp(dt.getTimestamp());
+        listItem.setStatus(ListItem.STATUS_ACTIVE);
+        getHelper().getList().add(listItem, null);
+        mListener.onSave(mode, listItem);
         prepareNew();
     }
 
     public void deleteReminder() {
-        getHelper().getReminders().remove(reminder, null);
-        mListener.onSave(MODE_DELETE, reminder);
+        getHelper().getList().remove(listItem, null);
+        mListener.onSave(MODE_DELETE, listItem);
         prepareNew();
     }
 
@@ -196,7 +196,7 @@ public class ItemFragment extends Fragment implements DatePickerDialog.OnDateSet
     }
 
     public interface Listener {
-        void onSave(int mode, Reminder reminder);
+        void onSave(int mode, ListItem listItem);
 
         void onFragmentInteraction(Uri uri);
     }

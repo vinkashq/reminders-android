@@ -2,7 +2,6 @@ package com.vinkas.reminders.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,14 +11,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.firebase.database.DataSnapshot;
+import com.vinkas.app.Fragment;
 import com.vinkas.reminders.R;
 import com.vinkas.reminders.ViewHolder;
 import com.vinkas.reminders.util.Helper;
 
-import io.vinkas.Reminder;
-import io.vinkas.ui.RecyclerAdapter;
+import com.vinkas.firebase.reminders.ListItem;
+import com.vinkas.firebase.ui.RecyclerAdapter;
 
-public class ListFragment extends Fragment {
+public class ListFragment extends Fragment<Helper> {
 
     private static final String ARG_COLUMN_COUNT = "column-count";
     private int mColumnCount = 1;
@@ -48,7 +48,7 @@ public class ListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_reminders_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_list, container, false);
 
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
@@ -60,23 +60,23 @@ public class ListFragment extends Fragment {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
             Helper helper = Helper.getInstance();
-            recyclerView.setAdapter(new RecyclerAdapter<Reminder, ViewHolder>(Reminder.class, R.layout.fragment_reminders_item, ViewHolder.class, helper.getReminders().getReference()) {
+            recyclerView.setAdapter(new RecyclerAdapter<ListItem, ViewHolder>(ListItem.class, R.layout.fragment_item_view, ViewHolder.class, helper.getList().getReference()) {
                 @Override
-                protected void populateViewHolder(ViewHolder viewHolder, Reminder model, int position) {
-                    viewHolder.setReminder(model);
+                protected void populateViewHolder(ViewHolder viewHolder, ListItem model, int position) {
+                    viewHolder.setListItem(model);
                     viewHolder.setOnClickListener(new ViewHolder.OnClickListener() {
                         @Override
-                        public void onClick(View view, Reminder reminder) {
-                            mListener.onItemClick(reminder);
+                        public void onClick(View view, ListItem listItem) {
+                            mListener.onItemClick(listItem);
                         }
                     });
                 }
 
                 @Override
-                protected Reminder parseSnapshot(DataSnapshot snapshot) {
-                    Reminder reminder = super.parseSnapshot(snapshot);
-                    Log.d("Schedule_" + reminder.getTitle(), reminder.scheduleIfNotExist().toString());
-                    return reminder;
+                protected ListItem parseSnapshot(DataSnapshot snapshot) {
+                    ListItem listItem = super.parseSnapshot(snapshot);
+                    Log.d("Schedule_" + listItem.getTitle(), listItem.scheduleIfNotExist().toString());
+                    return listItem;
                 }
             });
         }
@@ -102,6 +102,6 @@ public class ListFragment extends Fragment {
     }
 
     public interface Listener {
-        void onItemClick(Reminder reminder);
+        void onItemClick(ListItem listItem);
     }
 }

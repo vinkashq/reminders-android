@@ -2,7 +2,7 @@ package com.vinkas.reminders;
 
 import com.vinkas.reminders.util.Helper;
 
-import io.vinkas.Reminder;
+import com.vinkas.firebase.reminders.ListItem;
 
 /**
  * Created by Vinoth on 6-5-16.
@@ -23,7 +23,7 @@ public class Application extends com.vinkas.app.Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Reminder.setContentActivity(MainActivity.class);
+        ListItem.setContentActivity(MainActivity.class);
     }
 
 }

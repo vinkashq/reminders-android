@@ -1,4 +1,4 @@
-package io.vinkas;
+package com.vinkas.firebase.reminders;
 
 import android.app.AlarmManager;
 import android.app.Notification;
@@ -19,7 +19,7 @@ import com.google.firebase.database.Exclude;
 /**
  * Created by Vinoth on 6-5-16.
  */
-public class Reminder extends ListItem<Reminders> {
+public class ListItem extends com.vinkas.firebase.ListItem {
 
     public static final int STATUS_ACTIVE = 1;
     public static final int STATUS_INACTIVE = 2;
@@ -84,7 +84,7 @@ public class Reminder extends ListItem<Reminders> {
     }
 
     public static void setContentActivity(Class<?> contentActivity) {
-        Reminder.contentActivity = contentActivity;
+        ListItem.contentActivity = contentActivity;
     }
 
     static Bitmap largeIcon;
@@ -159,7 +159,7 @@ public class Reminder extends ListItem<Reminders> {
         return pref;
     }
 
-    public Reminder() {
+    public ListItem() {
         super();
         setAlarm_rtc_type(AlarmManager.RTC_WAKEUP);
     }
