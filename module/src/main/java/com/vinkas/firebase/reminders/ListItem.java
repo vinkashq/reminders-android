@@ -10,11 +10,16 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 
+import com.vinkas.firebase.*;
+import com.vinkas.firebase.List;
 import com.vinkas.module.reminders.R;
 import com.vinkas.notification.Scheduler;
 import com.vinkas.util.Helper;
 
 import com.google.firebase.database.Exclude;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Vinoth on 6-5-16.
@@ -22,18 +27,11 @@ import com.google.firebase.database.Exclude;
 public class ListItem extends com.vinkas.firebase.ListItem {
 
     public static final int STATUS_ACTIVE = 1;
-    public static final int STATUS_INACTIVE = 2;
-    public static final int STATUS_ACHIEVED = 3;
 
     @Override
     public void onCreate() {
         super.onCreate();
         schedule();
-    }
-
-    public void setTimestamp(int day, int month, int year, int hour, int min) {
-        Helper helper = Helper.getInstance();
-        setTimestamp(helper.toTimeStamp(day, month, year, hour, min));
     }
 
     private String title;
@@ -78,7 +76,6 @@ public class ListItem extends com.vinkas.firebase.ListItem {
     }
 
     private static Class<?> contentActivity;
-
     public static Class<?> getContentActivity() {
         return contentActivity;
     }
@@ -88,16 +85,36 @@ public class ListItem extends com.vinkas.firebase.ListItem {
     }
 
     static Bitmap largeIcon;
-
     public static Bitmap getLargeIcon() {
         if (largeIcon == null)
             largeIcon = BitmapFactory.decodeResource(Helper.getApplication().getResources(), R.drawable.ic_access_alarm_white_48dp);
         return largeIcon;
     }
 
+    public Set<String> getDataSet() {
+        HashSet<String> data = new HashSet<>();
+        data.add(getTitle());
+        data.add(getTimestamp().toString());
+        return data;
+    }
+
     public void schedule() {
+        getScheduler().schedule(getKey().hashCode(), getNotification(), getTimestamp(), getAlarm_RTC_TYPE());
+        SharedPreferences.Editor editor = getPref().edit();
+        editor.putStringSet(getKey(), getDataSet());
+        editor.commit();
+    }
+
+    public void unschedule() {
+        getScheduler().unschedule(getKey().hashCode(), getNotification());
+        SharedPreferences.Editor editor = getPref().edit();
+        editor.remove(getKey());
+        editor.commit();
+    }
+
+    private Notification notification;
+    public Notification getNotification() {
         Notification.Builder builder = getScheduler().getNotificationBuilder();
-        Notification notification;
         Intent editActivity = new Intent(getScheduler().getAndroidContext(), getContentActivity());
         editActivity.putExtra("Key", getKey());
         PendingIntent contentIndent = PendingIntent
@@ -118,17 +135,11 @@ public class ListItem extends com.vinkas.firebase.ListItem {
             notification = builder.build();
         else
             notification = builder.getNotification();
-        getScheduler().schedule(getKey().hashCode(), notification, getTimestamp(), getAlarm_RTC_TYPE());
-
-        SharedPreferences.Editor editor = getPref().edit();
-        editor.putLong(getKey(), System.currentTimeMillis());
-        editor.putString(getKey() + "_Title", getTitle());
-        editor.putLong(getKey() + "_Timestamp", getTimestamp());
-        editor.commit();
+        return notification;
     }
 
     public Boolean scheduleIfNotExist() {
-        if(isScheduled())
+        if (isScheduled())
             return false;
         schedule();
         return true;
@@ -136,17 +147,13 @@ public class ListItem extends com.vinkas.firebase.ListItem {
 
     @Exclude
     public Boolean isScheduled() {
-        if(getPref().contains(getKey())) {
-            if(getPref().getString(getKey() + "_Title", "").equals(getTitle()) &&
-                    getPref().getLong(getKey() + "_Timestamp", 0) == getTimestamp())
-                return true;
-        }
-        return false;
+        Set<String> dataSet = getPref().getStringSet(getKey(), null);
+        return (dataSet != null && dataSet.containsAll(getDataSet()));
     }
 
     Scheduler scheduler;
     protected Scheduler getScheduler() {
-        if(scheduler == null) {
+        if (scheduler == null) {
             scheduler = Scheduler.getInstance();
         }
         return scheduler;
@@ -154,9 +161,15 @@ public class ListItem extends com.vinkas.firebase.ListItem {
 
     SharedPreferences pref;
     protected SharedPreferences getPref() {
-        if(pref == null)
+        if (pref == null)
             pref = getScheduler().getAndroidContext().getSharedPreferences("Reminder", Context.MODE_PRIVATE);
         return pref;
+    }
+
+    @Override
+    public void removeFrom(List list, RemoveListener listener) {
+        unschedule();
+        super.removeFrom(list, listener);
     }
 
     public ListItem() {
