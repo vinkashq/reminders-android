@@ -6,6 +6,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,11 +16,17 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TimePicker;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.vinkas.app.Fragment;
 import com.vinkas.reminders.R;
 import com.vinkas.reminders.util.Helper;
@@ -106,6 +113,7 @@ public class ItemFragment extends Fragment<Helper> implements DatePickerDialog.O
         return view;
     }
 
+    AdView bannerAd;
     public View initialize(View view) {
         etTitle = (EditText) view.findViewById(R.id.etTitle);
         btAt = (Button) view.findViewById(R.id.btAt);
@@ -115,7 +123,45 @@ public class ItemFragment extends Fragment<Helper> implements DatePickerDialog.O
                 dt.show();
             }
         });
+        FirebaseRemoteConfig config = Helper.getInstance().getConfig();
+        Boolean adEnabled = config.getBoolean("ad_enabled");
+        Log.d("ad_enabled", adEnabled.toString());
+        if(adEnabled) {
+            String adUnitId = config.getString("banner_ad_unit_id");
+            Log.d("ad_unit_id", adUnitId.toString());
+            if (adUnitId != null) {
+                LinearLayout adHolder = (LinearLayout) view.findViewById(R.id.adHolder);
+                bannerAd = new AdView(getContext());
+                bannerAd.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                bannerAd.setAdSize(AdSize.SMART_BANNER);
+                bannerAd.setAdUnitId(adUnitId);
+                adHolder.addView(bannerAd);
+                AdRequest adRequest = new AdRequest.Builder()
+                        .build();
+                bannerAd.setAdListener(new AdListener() {
+                    @Override
+                    public void onAdFailedToLoad(int i) {
+                        Helper.onException(new Exception("Ad Failed to Load : Error Code : " + i));
+                    }
+                });
+                bannerAd.loadAd(adRequest);
+            }
+        }
         return view;
+    }
+
+    @Override
+    public void onPause() {
+        if(bannerAd != null)
+            bannerAd.pause();
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(bannerAd != null)
+            bannerAd.resume();
     }
 
     @Override

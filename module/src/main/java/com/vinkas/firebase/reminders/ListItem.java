@@ -2,6 +2,7 @@ package com.vinkas.firebase.reminders;
 
 import android.app.AlarmManager;
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -13,7 +14,7 @@ import android.os.Build;
 import com.vinkas.firebase.*;
 import com.vinkas.firebase.List;
 import com.vinkas.module.reminders.R;
-import com.vinkas.notification.Scheduler;
+import com.vinkas.notifier.Scheduler;
 import com.vinkas.util.Helper;
 
 import com.google.firebase.database.Exclude;
@@ -76,6 +77,7 @@ public class ListItem extends com.vinkas.firebase.ListItem {
     }
 
     private static Class<?> contentActivity;
+
     public static Class<?> getContentActivity() {
         return contentActivity;
     }
@@ -85,12 +87,18 @@ public class ListItem extends com.vinkas.firebase.ListItem {
     }
 
     static Bitmap largeIcon;
+
     public static Bitmap getLargeIcon() {
         if (largeIcon == null)
             largeIcon = BitmapFactory.decodeResource(Helper.getApplication().getResources(), R.drawable.ic_access_alarm_white_48dp);
         return largeIcon;
     }
 
+    public static void setLargeIcon(Bitmap icon) {
+        largeIcon = icon;
+    }
+
+    @Exclude
     public Set<String> getDataSet() {
         HashSet<String> data = new HashSet<>();
         data.add(getTitle());
@@ -98,28 +106,56 @@ public class ListItem extends com.vinkas.firebase.ListItem {
         return data;
     }
 
+    private Integer notificationId = null;
+
+    public Integer getNotificationId(boolean existingOnly) {
+        if (notificationId == null || notificationId == 0)
+            notificationId = getPref().getInt(getKey() + NotificationIdKey, 0);
+        if (existingOnly)
+            return notificationId;
+        if (notificationId == 0)
+            notificationId = com.vinkas.notifier.Notification.getId();
+        return notificationId;
+    }
+
+    private static final String NotificationIdKey = "_NotificationId";
+
     public void schedule() {
-        getScheduler().schedule(getKey().hashCode(), getNotification(), getTimestamp(), getAlarm_RTC_TYPE());
+        getScheduler().schedule(getNotificationId(false), getNotification(), getTimestamp(), getAlarm_RTC_TYPE());
         SharedPreferences.Editor editor = getPref().edit();
         editor.putStringSet(getKey(), getDataSet());
+        editor.putInt(getKey() + NotificationIdKey, notificationId);
         editor.commit();
+    }
+
+    public void cancelNotification() {
+        NotificationManager manager = (NotificationManager) Helper.getApplication().getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.cancel(getNotificationId(true));
     }
 
     public void unschedule() {
-        getScheduler().unschedule(getKey().hashCode(), getNotification());
-        SharedPreferences.Editor editor = getPref().edit();
-        editor.remove(getKey());
-        editor.commit();
+        Integer nid = getNotificationId(true);
+        if(nid != null && nid != 0) {
+            cancelNotification();
+            getScheduler().unschedule(nid, getNotification());
+            SharedPreferences.Editor editor = getPref().edit();
+            editor.remove(getKey());
+            editor.remove(getKey() + NotificationIdKey);
+            notificationId = null;
+            editor.commit();
+        }
     }
 
     private Notification notification;
+
+    @Exclude
     public Notification getNotification() {
         Notification.Builder builder = getScheduler().getNotificationBuilder();
         Intent editActivity = new Intent(getScheduler().getAndroidContext(), getContentActivity());
         editActivity.putExtra("Key", getKey());
         PendingIntent contentIndent = PendingIntent
                 .getActivity(getScheduler().getAndroidContext(),
-                        getKey().hashCode(), editActivity, 0);
+                        getNotificationId(false), editActivity, 0);
         builder = builder.setWhen(getTimestamp())
                 .setContentTitle(getTitle())
                 //.setContentText(getTitle())
@@ -138,6 +174,7 @@ public class ListItem extends com.vinkas.firebase.ListItem {
         return notification;
     }
 
+    @Exclude
     public Boolean scheduleIfNotExist() {
         if (isScheduled())
             return false;
@@ -152,6 +189,7 @@ public class ListItem extends com.vinkas.firebase.ListItem {
     }
 
     Scheduler scheduler;
+
     protected Scheduler getScheduler() {
         if (scheduler == null) {
             scheduler = Scheduler.getInstance();
@@ -160,6 +198,7 @@ public class ListItem extends com.vinkas.firebase.ListItem {
     }
 
     SharedPreferences pref;
+
     protected SharedPreferences getPref() {
         if (pref == null)
             pref = getScheduler().getAndroidContext().getSharedPreferences("Reminder", Context.MODE_PRIVATE);

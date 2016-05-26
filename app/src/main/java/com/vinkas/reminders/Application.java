@@ -1,5 +1,8 @@
 package com.vinkas.reminders;
 
+import android.graphics.BitmapFactory;
+
+import com.vinkas.notifier.Scheduler;
 import com.vinkas.reminders.util.Helper;
 
 import com.vinkas.firebase.reminders.ListItem;
@@ -12,7 +15,7 @@ public class Application extends com.vinkas.app.Application {
     @Override
     public void setHelper() {
         Helper.setApplication(this);
-        setHelper(new Helper());
+        setHelper(new Helper(getResources().getBoolean(R.bool.firebase_persistence_enabled)));
     }
 
     @Override
@@ -21,9 +24,10 @@ public class Application extends com.vinkas.app.Application {
     }
 
     @Override
-    public void onCreate() {
-        super.onCreate();
+    public void onFirebaseCreate() {
+        super.onFirebaseCreate();
+        Scheduler.setAndroidContext(getApplicationContext());
         ListItem.setContentActivity(MainActivity.class);
+        ListItem.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
     }
-
 }

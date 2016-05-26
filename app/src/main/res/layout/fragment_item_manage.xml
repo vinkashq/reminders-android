@@ -37,4 +37,12 @@
             android:textAlignment="textStart" />
 
     </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:id="@+id/adHolder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

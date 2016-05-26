@@ -9,6 +9,10 @@ import com.vinkas.firebase.reminders.List;
  */
 public class Helper extends com.vinkas.util.Helper {
 
+    public Helper(Boolean firebase_persistence_enabled) {
+        super(firebase_persistence_enabled);
+    }
+
     public static Helper getInstance() {
         return getApplication().getHelper();
     }
