@@ -1,26 +1,27 @@
-package com.vinkas.reminders.open;
+package com.vinkas.reminders;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.vinkas.reminders.open.fragment.ItemFragment;
+import com.vinkas.app.Activity;
+import com.vinkas.reminders.fragment.ItemFragment;
 
-import com.vinkas.activity.NavigationDrawerActivity;
-import com.vinkas.reminders.open.fragment.ListFragment;
+import com.vinkas.reminders.fragment.ListFragment;
 
-import io.vinkas.Reminder;
+import com.vinkas.firebase.reminders.ListItem;
 
 /**
  * Created by Vinoth on 6-5-16.
  */
-public class MainActivity extends NavigationDrawerActivity implements ItemFragment.Listener, ListFragment.Listener, ViewPager.OnPageChangeListener {
+public class MainActivity extends Activity implements ItemFragment.Listener, ListFragment.Listener, ViewPager.OnPageChangeListener {
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -32,18 +33,14 @@ public class MainActivity extends NavigationDrawerActivity implements ItemFragme
         switch (position) {
             case 0:
                 itemFragment.prepareNew();
-                getFab().setVisibility(View.VISIBLE);
+                fab.setVisibility(View.VISIBLE);
                 getSupportActionBar().setDisplayShowTitleEnabled(true);
-                getSupportActionBar().setHomeButtonEnabled(false);
-                getDrawer().setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-                toggle.syncState();
+                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
                 break;
             case 1:
-                getFab().setVisibility(View.GONE);
+                fab.setVisibility(View.GONE);
                 getSupportActionBar().setDisplayShowTitleEnabled(false);
-                getSupportActionBar().setHomeButtonEnabled(true);
-                getSupportActionBar().setHomeAsUpIndicator(android.support.v7.appcompat.R.drawable.abc_ic_ab_back_mtrl_am_alpha);
-                getDrawer().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 break;
         }
     }
@@ -54,8 +51,8 @@ public class MainActivity extends NavigationDrawerActivity implements ItemFragme
     }
 
     @Override
-    public void onItemClick(Reminder reminder) {
-        itemFragment.prepareEdit(reminder);
+    public void onItemClick(ListItem listItem) {
+        itemFragment.prepareEdit(listItem);
         mViewPager.setCurrentItem(1);
     }
 
@@ -104,7 +101,7 @@ public class MainActivity extends NavigationDrawerActivity implements ItemFragme
     }
 
     @Override
-    public void onSave(int mode, Reminder reminder) {
+    public void onSave(int mode, ListItem listItem) {
         mViewPager.setCurrentItem(0);
     }
 
@@ -113,32 +110,40 @@ public class MainActivity extends NavigationDrawerActivity implements ItemFragme
         return (Application) super.getApp();
     }
 
+    ItemFragment itemFragment;
+    FloatingActionButton fab;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                itemFragment.prepareNew();
+                mViewPager.setCurrentItem(1);
+            }
+        });
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        mViewPager = (ViewPager) findViewById(R.id.viewPager);
+        mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.addOnPageChangeListener(this);
         editKey = getIntent().getStringExtra("Key");
-        setLayout(R.layout.activity_main);
-        setMenu(R.menu.activity_main);
-        setNavigationMenu(R.menu.activity_main_drawer);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_main, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (toggle.onOptionsItemSelected(item) && mViewPager.getCurrentItem() == 1) {
+        if(item.getItemId() == android.R.id.home) {
             mViewPager.setCurrentItem(0);
             return false;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void setContent(View content) {
-        super.setContent(content);
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
-        mViewPager = (ViewPager) findViewById(R.id.viewPager);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
-        mViewPager.addOnPageChangeListener(this);
     }
 
     private String editKey;
@@ -151,14 +156,6 @@ public class MainActivity extends NavigationDrawerActivity implements ItemFragme
             mViewPager.setCurrentItem(0);
             return;
         }
-    }
-
-    ItemFragment itemFragment;
-
-    @Override
-    public void onFabClick(View v) {
-        itemFragment.prepareNew();
-        mViewPager.setCurrentItem(1);
     }
 
 }

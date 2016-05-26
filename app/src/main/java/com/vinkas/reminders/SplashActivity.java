@@ -1,9 +1,9 @@
-package com.vinkas.reminders.open;
+package com.vinkas.reminders;
 
 /**
  * Created by Vinoth on 4-5-16.
  */
-public class SplashActivity extends com.vinkas.activity.SplashActivity {
+public class SplashActivity extends com.vinkas.app.SplashActivity {
 
     @Override
     protected Class<?> getMainActivityClass() {

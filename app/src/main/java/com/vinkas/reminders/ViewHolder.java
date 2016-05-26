@@ -1,11 +1,10 @@
-package com.vinkas.reminders.open;
+package com.vinkas.reminders;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -14,7 +13,7 @@ import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.vinkas.util.Helper;
 
-import io.vinkas.Reminder;
+import com.vinkas.firebase.reminders.ListItem;
 
 /**
  * Created by Vinoth on 12-5-16.
@@ -62,24 +61,24 @@ public class ViewHolder extends RecyclerView.ViewHolder {
         ivIcon.setImageDrawable(myDrawable);
     }
 
-    private Reminder reminder;
+    private ListItem listItem;
 
-    public Reminder getReminder() {
-        return reminder;
+    public ListItem getListItem() {
+        return listItem;
     }
 
-    public void setReminder(Reminder reminder) {
-        this.reminder = reminder;
-        setKey(reminder.getKey());
-        setTitle(reminder.getTitle());
-        setTimestamp(reminder.getTimestamp());
+    public void setListItem(ListItem listItem) {
+        this.listItem = listItem;
+        setKey(listItem.getKey());
+        setTitle(listItem.getTitle());
+        setTimestamp(listItem.getTimestamp());
     }
 
     public void setOnClickListener(final OnClickListener listener) {
         linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.onClick(v, getReminder());
+                listener.onClick(v, getListItem());
             }
         });
     }
@@ -93,6 +92,6 @@ public class ViewHolder extends RecyclerView.ViewHolder {
     }
 
     public interface OnClickListener {
-        void onClick(View view, Reminder reminder);
+        void onClick(View view, ListItem listItem);
     }
 }

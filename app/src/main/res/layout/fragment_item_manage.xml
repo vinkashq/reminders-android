@@ -1,0 +1,48 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragment.ItemFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="1dp"
+        android:background="@android:color/white"
+        android:elevation="1dp"
+        android:orientation="vertical"
+        android:padding="@dimen/margin_default">
+
+        <EditText
+            android:id="@+id/etTitle"
+            style="@style/Widget.Vinkas.Button.Borderless.Post"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:drawableLeft="@drawable/ic_create_black_24dp"
+            android:drawableStart="@drawable/ic_create_black_24dp"
+            android:hint="Book train ticket"
+            android:textAlignment="textStart" />
+
+        <Button
+            android:id="@+id/btAt"
+            style="@style/Widget.Vinkas.Button.Borderless.Post"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:clickable="true"
+            android:drawableLeft="@drawable/ic_access_alarm_black_24dp"
+            android:drawableStart="@drawable/ic_access_alarm_black_24dp"
+            android:text="at"
+            android:textAlignment="textStart" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:id="@+id/adHolder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+</RelativeLayout>
