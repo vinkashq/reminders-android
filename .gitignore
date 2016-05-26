@@ -10,3 +10,4 @@ keys.xml
 /app/build.gradle
 *.apk
 google-services.json
+/apk
