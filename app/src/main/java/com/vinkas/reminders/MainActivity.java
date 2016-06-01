@@ -1,5 +1,6 @@
 package com.vinkas.reminders;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -110,12 +111,32 @@ public class MainActivity extends Activity implements ItemFragment.Listener, Lis
         return (Application) super.getApp();
     }
 
+    private final int REQUEST_CODE_SPLASH = 1000;
+
     ItemFragment itemFragment;
     FloatingActionButton fab;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        editKey = getIntent().getStringExtra("Key");
+        if (editKey != null) {
+            Intent intent = new Intent(this, SplashActivity.class);
+            startActivityForResult(intent, REQUEST_CODE_SPLASH);
+        } else
+            initialize();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_SPLASH)
+            initialize();
+    }
+
+    public void initialize() {
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -128,7 +149,6 @@ public class MainActivity extends Activity implements ItemFragment.Listener, Lis
         mViewPager = (ViewPager) findViewById(R.id.viewPager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.addOnPageChangeListener(this);
-        editKey = getIntent().getStringExtra("Key");
     }
 
     @Override
@@ -139,7 +159,7 @@ public class MainActivity extends Activity implements ItemFragment.Listener, Lis
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == android.R.id.home) {
+        if (item.getItemId() == android.R.id.home) {
             mViewPager.setCurrentItem(0);
             return false;
         }
