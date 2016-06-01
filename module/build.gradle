@@ -24,4 +24,5 @@ dependencies {
     compile project(':vinkas')
     compile 'com.vinkas:notifier:-SNAPSHOT'
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
+    compile 'com.vinkas:firealm-android:0.9.1'
 }

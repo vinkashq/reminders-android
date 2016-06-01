@@ -30,7 +30,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.vinkas.app.Fragment;
 import com.vinkas.reminders.R;
 import com.vinkas.reminders.util.Helper;
-import com.vinkas.ui.DateTimePickerDialog;
+import com.vinkas.dialog.DateTimePicker;
 
 import java.util.Calendar;
 
@@ -101,7 +101,7 @@ public class ItemFragment extends Fragment<Helper> implements DatePickerDialog.O
 
     EditText etTitle;
     Button btAt;
-    DateTimePickerDialog dt;
+    DateTimePicker dt;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -181,7 +181,7 @@ public class ItemFragment extends Fragment<Helper> implements DatePickerDialog.O
     public static final int MODE_DELETE = 2;
 
     public void setDateTimePicker(long timestamp) {
-        dt = new DateTimePickerDialog(getContext(), this, this, timestamp);
+        dt = new DateTimePicker(getContext(), this, this, timestamp);
         Calendar c = dt.getCalendar();
         onDateSet(null, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
         onTimeSet(null, c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
