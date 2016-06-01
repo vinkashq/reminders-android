@@ -1,5 +1,10 @@
-# Reminders
-Android App to remind to-do tasks using Firebase
+# Vinkas Reminders for Android
+
+[![](https://jitpack.io/v/com.vinkas/reminders-android.svg)](https://jitpack.io/#com.vinkas/reminders-android)
+[![Build Status](https://travis-ci.org/vinkas-com/reminders-android.svg?branch=master)](https://travis-ci.org/vinkas-com/reminders-android)
+[![License: MIT](https://img.shields.io/badge/License-MIT-orange.svg)](https://opensource.org/licenses/MIT)
+<hr />
+Simple App to remind to-do tasks using [Firealm](https://github.com/vinkas-com/firealm-android) (Firebase and Realm)
 
 ## Requirements
 * [Android Library](https://github.com/vinkas-technologies/android-library)
