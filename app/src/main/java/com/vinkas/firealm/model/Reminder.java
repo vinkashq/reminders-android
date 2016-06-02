@@ -8,8 +8,9 @@ import android.os.Build;
 
 import com.google.firebase.database.Exclude;
 import com.vinkas.realm.model.Notification;
-import com.vinkas.module.reminder.R;
 import com.vinkas.module.notifier.Scheduler;
+import com.vinkas.reminders.MainActivity;
+import com.vinkas.reminders.R;
 import com.vinkas.util.Helper;
 
 import org.firealm.FirealmModel;
@@ -23,25 +24,15 @@ import io.realm.annotations.PrimaryKey;
  */
 public class Reminder extends RealmObject implements FirealmModel {
 
-    private static Class<?> contentActivity;
     static Bitmap largeIcon;
-
     public static Bitmap getLargeIcon() {
         if (largeIcon == null)
-            largeIcon = BitmapFactory.decodeResource(Helper.getApplication().getResources(), R.drawable.ic_access_alarm_white_48dp);
+            largeIcon = BitmapFactory.decodeResource(Helper.getApplication().getResources(), R.mipmap.ic_launcher);
         return largeIcon;
     }
 
-    public static void setLargeIcon(Bitmap icon) {
-        largeIcon = icon;
-    }
-
     public static Class<?> getContentActivity() {
-        return contentActivity;
-    }
-
-    public static void setContentActivity(Class<?> activity) {
-        contentActivity = activity;
+        return MainActivity.class;
     }
 
     public Reminder() {
