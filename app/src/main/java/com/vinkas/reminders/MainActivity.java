@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.vinkas.app.Activity;
+import com.vinkas.firealm.model.Reminder;
 import com.vinkas.reminders.fragment.ItemFragment;
 
 import com.vinkas.reminders.fragment.ListFragment;
@@ -102,7 +103,7 @@ public class MainActivity extends Activity implements ItemFragment.Listener, Lis
     }
 
     @Override
-    public void onSave(int mode, ListItem listItem) {
+    public void onSave(int mode, Reminder listItem) {
         mViewPager.setCurrentItem(0);
     }
 

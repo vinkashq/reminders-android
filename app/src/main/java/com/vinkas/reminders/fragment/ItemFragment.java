@@ -28,13 +28,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.vinkas.app.Fragment;
+import com.vinkas.firealm.model.Reminder;
 import com.vinkas.reminders.R;
 import com.vinkas.reminders.util.Helper;
 import com.vinkas.dialog.DateTimePicker;
 
 import java.util.Calendar;
-
-import com.vinkas.firebase.reminders.ListItem;
 
 public class ItemFragment extends Fragment<Helper> implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
     private Listener mListener;
@@ -47,7 +46,7 @@ public class ItemFragment extends Fragment<Helper> implements DatePickerDialog.O
         return fragment;
     }
 
-    private ListItem editR;
+    private Reminder editR;
 
     public static ItemFragment newInstance(String key) {
         final ItemFragment fragment = newInstance();
@@ -56,13 +55,13 @@ public class ItemFragment extends Fragment<Helper> implements DatePickerDialog.O
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    ListItem listItem = snapshot.getValue(ListItem.class);
-                    listItem.setKey(snapshot.getKey());
-                    listItem.setPriority(snapshot.getPriority());
+                    Reminder reminder = snapshot.getValue(Reminder.class);
+                    reminder.setKey(snapshot.getKey());
+                    reminder.setPriority(snapshot.getPriority());
                     if (fragment.etTitle != null)
-                        fragment.prepareEdit(listItem);
+                        fragment.prepareEdit(reminder);
                     else
-                        fragment.editR = listItem;
+                        fragment.editR = reminder;
                 }
             }
             @Override

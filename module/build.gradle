@@ -22,7 +22,6 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     compile project(':vinkas')
-    compile 'com.vinkas:notifier:-SNAPSHOT'
-    compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
+    compile 'com.vinkas:notifier-android:0.1.1'
     compile 'com.vinkas:firealm-android:0.9.1'
 }
